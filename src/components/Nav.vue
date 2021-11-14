@@ -22,11 +22,12 @@
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
         
-
-        <b-nav-item-dropdown right>
+        <b-nav-item to='login' v-if="!isLogin()">Login</b-nav-item>
+        <b-nav-item @click='logout' v-if="isLogin()">Logout</b-nav-item>
+        <b-nav-item-dropdown right v-if="isLogin()">
           <!-- Using 'button-content' slot -->
           <template #button-content>
-            <em>User</em>
+            <em>{{currentUser.displayName}}</em>
           </template>
           <b-dropdown-item href="#">Profile</b-dropdown-item>
           <b-dropdown-item href="#">Sign Out</b-dropdown-item>
@@ -46,7 +47,20 @@
 </template>
 <script>
 export default {
-    
+  data(){
+    return{
+      currentUser: firebase.auth().currentUser,
+    }
+  },
+  methods:{
+    logout(){
+      firebase.auth().signOut()
+      location.reload()
+    },
+    isLogin(){
+      return !!firebase.auth().currentUser
+    }
+  }
 }
 </script>
 <style lang="">
