@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import helloworld from './components/HelloWorld.vue'
 import test from './components/Test.vue'
 import login from './components/Login.vue'
+import Gazer from './components/Gazer.vue'
 
 Vue.use(Router)
 
@@ -17,6 +18,10 @@ const router =  new Router({
     {
       path: '/test',
       component: test,
+    },
+    {
+      path: '/gazer',
+      component: Gazer,
     },
     {
       path: '/start',
@@ -34,7 +39,7 @@ const router =  new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(firebase.auth().currentUser)
+  // console.log(firebase.auth().currentUser)
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
