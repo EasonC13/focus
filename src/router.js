@@ -6,6 +6,7 @@ import helloworld from './components/HelloWorld.vue'
 import test from './components/Test.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
+import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
 
 Vue.use(Router)
 
@@ -22,6 +23,10 @@ const router =  new Router({
     {
       path: '/gazer',
       component: Gazer,
+    },
+    {
+      path: '/emotion',
+      component: GazerEmotionPredict,
     },
     {
       path: '/start',
