@@ -46,6 +46,7 @@ export default {
       let b64img = canvas.toDataURL();
       // console.log(prediction)
       let prediction = await webgazer.get_facemash_model_predict()
+      console.log(prediction)
       return prediction
     },
     async getCurrent(){      
@@ -67,17 +68,17 @@ export default {
       // 下一步：取得 Face 的邊界，然後才切成功
       let faceMesh = await this.getfaceMesh()
 
-      let mesh = faceMesh[0]['scaledMesh']
-      window.mesh = faceMesh[0]['scaledMesh']
+      let mesh = faceMesh[0]['annotations']['silhouette']
+      window.mesh = faceMesh[0]['annotations']['silhouette']
 
       let all_x = mesh.map(x => x[0])
       let all_y = mesh.map(x => x[1])
-      let x_min = Math.min(...all_x)
-      let x_max = Math.max(...all_x)
+      let x_min = parseInt(Math.min(...all_x))
+      let x_max = parseInt(Math.max(...all_x))
       let x_center = parseInt((x_max + x_min) / 2)
       let x_half = x_max - x_center
-      let y_min = Math.min(...all_y)
-      let y_max = Math.max(...all_y)
+      let y_min = parseInt(Math.min(...all_y))
+      let y_max = parseInt(Math.max(...all_y))
       let y_half_size = parseInt((y_max - y_min) / 2)
       
       // resshape
@@ -89,13 +90,27 @@ export default {
       let face_crop = img_array.slice(y_min, y_max)
       let sup = 0
       if(face_crop.length % 2 == 1) sup = 1
-      face_crop = face_crop.map(x => x.slice(x_center - y_half_size, x_center + y_half_size + sup))
+      face_crop = face_crop.map(x => x.slice(x_min, x_max))
+      console.log({x_min, x_max, y_min, y_max})
+      setTimeout((mesh = faceMesh[0]['scaledMesh']) => {
+      let all_x = mesh.map(x => x[0])
+      let all_y = mesh.map(x => x[1])
+      let x_min = parseInt(Math.min(...all_x))
+      let x_max = parseInt(Math.max(...all_x))
+      let x_center = parseInt((x_max + x_min) / 2)
+      let x_half = x_max - x_center
+      let y_min = parseInt(Math.min(...all_y))
+      let y_max = parseInt(Math.max(...all_y))
+      let y_half_size = parseInt((y_max - y_min) / 2)
+      
+      console.log('scaledMesh', {x_min, x_max, y_min, y_max})
+      }, 1);
       // face_crop = face_crop.map(x => x.slice(y_min, y_max))
       console.log('face_crop', face_crop)
 
       let face_crop_1d = []
       for(var i = 0; i < face_crop.length; i++) face_crop_1d = face_crop_1d.concat(face_crop[i])
-      this.showCanvasByImgRGB(face_crop_1d, face_crop.length, face_crop[0].length, 'showFace')
+      this.showCanvasByImgRGB(face_crop_1d, face_crop[0].length, face_crop.length, 'showFace')
 
       return face_crop
       // axios({
@@ -200,7 +215,10 @@ export default {
   },
   async mounted(){
     await webgazer.begin()
-    // await webgazer.pause()
+    setTimeout(async () => {
+      // await webgazer.pause()
+    }, 1000)
+    
   },
 }
 </script>
