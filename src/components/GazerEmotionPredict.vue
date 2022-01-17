@@ -4,15 +4,24 @@
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
       <button @click="clearGazer">ClearModel</button>
       <button @click="getFaceCrop">getFaceCrop</button>
+      <button @click="predictEmotion">predictEmotion</button>
+      
       
       <p>{{current_emotion}}</p>
 
       <img id='showImg' src=''>
+      <img id='showFace' src=''>
   </div>
 </template>
 <script>
 const axios = require('axios');
-const tf = webgazer.get_tfjs()
+import * as tf from '@tensorflow/tfjs';
+var nj = require('numjs');
+
+function argMax(array) {
+  return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+}
+
 export default {
   data (){
     return {
@@ -63,7 +72,10 @@ export default {
 
       let all_x = mesh.map(x => x[0])
       let all_y = mesh.map(x => x[1])
-      let x_center = parseInt((Math.max(...all_x) + Math.min(...all_x)) / 2)
+      let x_min = Math.min(...all_x)
+      let x_max = Math.max(...all_x)
+      let x_center = parseInt((x_max + x_min) / 2)
+      let x_half = x_max - x_center
       let y_min = Math.min(...all_y)
       let y_max = Math.max(...all_y)
       let y_half_size = parseInt((y_max - y_min) / 2)
@@ -78,13 +90,14 @@ export default {
       let sup = 0
       if(face_crop.length % 2 == 1) sup = 1
       face_crop = face_crop.map(x => x.slice(x_center - y_half_size, x_center + y_half_size + sup))
+      // face_crop = face_crop.map(x => x.slice(y_min, y_max))
       console.log('face_crop', face_crop)
 
       let face_crop_1d = []
       for(var i = 0; i < face_crop.length; i++) face_crop_1d = face_crop_1d.concat(face_crop[i])
-      this.showCanvasByImgRGB(face_crop_1d, face_crop.length, face_crop.length)
+      this.showCanvasByImgRGB(face_crop_1d, face_crop.length, face_crop[0].length, 'showFace')
 
-      
+      return face_crop
       // axios({
       //   method: "POST",
       //   url: `https://home3.eason.tw/image`, 
@@ -101,6 +114,37 @@ export default {
       // })
       console.log("QQQ")
     },
+    async getModel(){
+      const model = await tf.loadLayersModel('mobilenet/model.json');
+      window.model = model
+      return model
+    },
+    async predictEmotion(){
+      let face_img_array = await this.getFaceCrop()
+      face_img_array = this.normalize_face_img_array(face_img_array)
+      let model = await this.getModel()
+      face_img_array = tf.tensor(face_img_array)
+      face_img_array = tf.image.resizeBilinear(face_img_array, [224,224])
+      face_img_array = face_img_array.reshape([1, ...face_img_array.shape])
+      window.face_img_array = face_img_array
+      let result = model.predict(face_img_array)
+      let idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
+      result = (await result.data())
+      let argmax = result.indexOf(result.sort()[result.length-1])
+      let emotion = idx_to_class[argmax]
+      console.log({emotion, result})
+      
+    },
+    normalize_face_img_array(face_img_array){
+      for(let i=0;i< face_img_array.length; i++){
+        for(let j = 0; j < face_img_array[0].length; j++){
+          face_img_array[i][j][0] -= 103.939
+          face_img_array[i][j][1] -= 116.779
+          face_img_array[i][j][2] -= 123.68
+        }
+      }
+      return face_img_array
+    },
     getRgbByImageData(ImageData){
       let outArray = []
       let idx;
@@ -110,8 +154,8 @@ export default {
       }
       return outArray
     },
-    showCanvasByImgRGB(data, width, height){
-      console.log('showCanvasByImgRGB', data, width, height)
+    showCanvasByImgRGB(data, width, height, id='showImg'){
+      console.log('showCanvasByImgRGB', {data, width, height, id})
       var canvas=document.createElement("canvas");
       var ctx=canvas.getContext("2d");
       // size the canvas to your desired image
@@ -124,7 +168,7 @@ export default {
       }
       ctx.putImageData(new ImageData(new Uint8ClampedArray(rgba), width, height) ,0,0);
       // create a new img object
-      var image= document.getElementById('showImg');
+      var image= document.getElementById(id);
 
       // set the img.src to the canvas data url
       image.src=canvas.toDataURL();
