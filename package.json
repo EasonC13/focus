@@ -6,15 +6,18 @@
     "serve": "vue-cli-service serve",
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "cname": "echo 'remote.ntnu.best' >> ./dist/CNAME"
   },
   "dependencies": {
     "@firebase/analytics": "^0.7.4",
     "@tensorflow/tfjs": "^3.5.0",
+    "axios": "^0.25.0",
     "bootstrap": "^4.6.1",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.6.5",
     "firebase": "^8.5.0",
+    "gh-pages": "^3.2.3",
     "jquery": "^1.9.1",
     "numjs": "^0.16.1",
     "vue": "^2.6.11",
