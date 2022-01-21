@@ -1,11 +1,12 @@
 <template lang="">
   <div>
-      <button @click="getCurrent">Get Point</button>
-      <button @click="pauseWebgazer">pauseWebgazer</button>
+      <!-- <button @click="getCurrent">Get Point</button>
+      <button @click="pauseWebgazer">pauseWebgazer</button> -->
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
       <button @click="clearGazer">ClearModel</button>
-      <button @click="getFaceCrop">getFaceCrop</button>
+      <!-- <button @click="getFaceCrop">getFaceCrop</button> -->
       <button @click="predictEmotion">predictEmotion</button>
+      <button @click="keepPredictEmotion">keepPredictEmotion</button>
       
       
       <p>{{current_emotion}}</p>
@@ -100,7 +101,7 @@ export default {
       let result = this.getRgbByImageData(img_data)
       this.showCanvasByImgRGB(result, canvas.width, canvas.height)
 
-      // 下一步：取得 Face 的邊界，然後才切成功
+      // Get the boundries of the face, then crop the image to the face part only.
       let faceMesh = await this.getfaceMesh()
 
       let mesh = faceMesh[0]['annotations']['silhouette']
@@ -127,20 +128,7 @@ export default {
       if(face_crop.length % 2 == 1) sup = 1
       face_crop = face_crop.map(x => x.slice(x_min, x_max))
       console.log({x_min, x_max, y_min, y_max})
-      setTimeout((mesh = faceMesh[0]['scaledMesh']) => {
-      let all_x = mesh.map(x => x[0])
-      let all_y = mesh.map(x => x[1])
-      let x_min = parseInt(Math.min(...all_x))
-      let x_max = parseInt(Math.max(...all_x))
-      let x_center = parseInt((x_max + x_min) / 2)
-      let x_half = x_max - x_center
-      let y_min = parseInt(Math.min(...all_y))
-      let y_max = parseInt(Math.max(...all_y))
-      let y_half_size = parseInt((y_max - y_min) / 2)
       
-      console.log('scaledMesh', {x_min, x_max, y_min, y_max})
-      }, 1);
-      // face_crop = face_crop.map(x => x.slice(y_min, y_max))
       console.log('face_crop', face_crop)
 
       let face_crop_1d = []
@@ -148,26 +136,9 @@ export default {
       this.showCanvasByImgRGB(face_crop_1d, face_crop[0].length, face_crop.length, 'showFace')
 
       return face_crop
-      // axios({
-      //   method: "POST",
-      //   url: `https://home3.eason.tw/image`, 
-      //   headers: {
-      //           "accept": "application/json",
-      //           'Content-Type': 'application/json'
-      //   },
-      //   data: {
-      //       img: result,
-      //       faceMesh: faceMesh
-      //   },
-      // }).then(response => {
-      //   console.log(response.data)
-      // })
-      console.log("QQQ")
     },
     async getModel(){
       const model = await tf.loadLayersModel(this.model_path+'/model.json');
-      // const model = await tf.loadLayersModel('mobilenet/model.json');
-      // window.model = model
       return model
     },
     async predictEmotion(){
@@ -182,73 +153,31 @@ export default {
       
       let img_data = context.getImageData(0, 0, 224, 224)
       face_img_array = this.getRgbByImageData(img_data)
-      console.log({face_img_array})
       let face_img_array_resized = []
       face_img_array = nj.array([face_img_array])
       face_img_array_resized = face_img_array.reshape(1, 224,224, 3)
-      // for(let i = 0; i < 224; i++){
-      //   let row = []
-      //   for(let j = 0; j < 224; j++){
-      //     row.push(face_img_array[i*224 + j])
-      //   }
-      //   face_img_array_resized.push(row)
-      // }
       face_img_array = face_img_array_resized.tolist()
       window.face_img_array_resized = face_img_array_resized
-      console.log({face_img_array_resized, face_img_array})
       
-      
-      // console.log({origin_face_img_array})
-      // face_img_array = this.normalize_face_img_array(face_img_array)
-      // let model = await this.getModel()
       let model = this.model
-      // console.log({face_img_array})
       face_img_array = tf.tensor(face_img_array)
       
-      // face_img_array = face_img_array.reshape([1, 224,224,3])
-      // face_img_array = tf.image.resizeBilinear(face_img_array, [224,224])
-      let face_img_array_rgb = (await face_img_array.data())
-      // let face_img_array_rgb_finish = nj.array(face_img_array_rgb).reshape(224,224,3).tolist()
-      
-
-      face_img_array_rgb = nj.array(Array.from(face_img_array_rgb)).reshape(-1, 3).tolist()
-      this.showCanvasByImgRGB(face_img_array_rgb, 224, 224)
-
-      // axios({
-      //   method: "POST",
-      //   url: `https://home3.eason.tw/image`, 
-      //   headers: {
-      //           "accept": "application/json",
-      //           'Content-Type': 'application/json'
-      //   },
-      //   data: {
-      //       face_img_array: await face_img_array.data(),
-      //       face_img_array_rgb,
-      //   },
-      // }).then(response => {
-      //   console.log(response.data)
-      //   vue.current_emotion = response.data.emotion
-      // })
       let result = await model.predict(face_img_array)
       let emotion, idx_to_class, valance, arousal
+
       if(result.length == 3){
         valance = parseFloat(await result[0].data())
         arousal = parseFloat(await result[1].data())
         emotion = await result[2].data()
       }else{
         emotion = await result.data()
-        
       }
-      console.log({emotion})
+
       if(emotion.length == 11){
         idx_to_class = {0: 'Neutral', 1: 'Happiness', 2: 'Sadness', 3: 'Surprise', 4: 'Fear', 5: 'Disgust', 6: 'Anger', 7: 'Contempt', 8: 'None', 9: 'Uncertain', 10: 'No-Face'}
       }else{
         idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
       }
-      
-      
-      
-      
       
       let argmax = argMax(Array.from(emotion))
       console.log({emotion, argmax})
@@ -256,16 +185,6 @@ export default {
       this.current_emotion = emotion
       console.log({valance, arousal, emotion, result})
       
-    },
-    normalize_face_img_array(face_img_array){
-      for(let i=0;i< face_img_array.length; i++){
-        for(let j = 0; j < face_img_array[0].length; j++){
-          face_img_array[i][j][0] -= 103.939
-          face_img_array[i][j][1] -= 116.779
-          face_img_array[i][j][2] -= 123.68
-        }
-      }
-      return face_img_array
     },
     getRgbByImageData(ImageData){
       let outArray = []
@@ -295,9 +214,6 @@ export default {
 
       // set the img.src to the canvas data url
       image.src=canvas.toDataURL();
-
-      
-
     },
     hideGazerVideoContainer(){
       if(document.getElementById("webgazerVideoContainer").style.display == 'none'){
@@ -330,6 +246,12 @@ export default {
       }, 300)
       
     },
+    keepPredictEmotion(){
+      vue = this
+      setInterval(async () => {
+        vue.predictEmotion()
+      }, 1000)
+    }
   },
   async mounted(){
     await webgazer.begin()
