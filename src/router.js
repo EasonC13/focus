@@ -25,7 +25,7 @@ const router =  new Router({
       component: Gazer,
     },
     {
-      path: '/emotion',
+      path: '/test_emotion_model',
       component: GazerEmotionPredict,
     },
     {

@@ -37,7 +37,7 @@ export default {
       let vue = this
       axios({
         method: "POST",
-        url: `https://gsoc.demo.eason.tw/model/facemesh`, 
+        url: `https://home3.eason.tw/image`, 
         headers: {
                 "accept": "application/json",
                 'Content-Type': 'application/json'

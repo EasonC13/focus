@@ -1,6 +1,7 @@
 <template lang="">
   <div>
       <button @click="getCurrent">Get Point</button>
+      <button @click="pauseWebgazer">pauseWebgazer</button>
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
       <button @click="clearGazer">ClearModel</button>
       <button @click="getFaceCrop">getFaceCrop</button>
@@ -11,6 +12,7 @@
 
       <img id='showImg' src=''>
       <img id='showFace' src=''>
+      <canvas id='FaceCanvas'></canvas>
   </div>
 </template>
 <script>
@@ -22,10 +24,43 @@ function argMax(array) {
   return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }
 
+function scaleImageData(originalImageData, targetWidth, targetHeight) {
+    const targetImageData = new ImageData(targetWidth, targetHeight);
+    const h1 = originalImageData.height;
+    const w1 = originalImageData.width;
+    const h2 = targetImageData.height;
+    const w2 = targetImageData.width;
+    const kh = h1 / h2;
+    const kw = w1 / w2;
+    const cur_img1pixel_sum = new Int32Array(4);
+    for (let i2 = 0; i2 < h2; i2 += 1) {
+        for (let j2 = 0; j2 < w2; j2 += 1) {
+            for (let i in cur_img1pixel_sum) cur_img1pixel_sum[i] = 0;
+            let cur_img1pixel_n = 0;
+            for (let i1 = Math.ceil(i2 * kh); i1 < (i2 + 1) * kh; i1 += 1) {
+                for (let j1 = Math.ceil(j2 * kw); j1 < (j2 + 1) * kw; j1 += 1) {
+                    const cur_p1 = (i1 * w1 + j1) * 4;
+                    for (let k = 0; k < 4; k += 1) {
+                        cur_img1pixel_sum[k] += originalImageData.data[cur_p1 + k];
+                    };
+                    cur_img1pixel_n += 1;
+                };
+            };
+            const cur_p2 = (i2 * w2 + j2) * 4;
+            for (let k = 0; k < 4; k += 1) {
+                targetImageData.data[cur_p2 + k] = cur_img1pixel_sum[k] / cur_img1pixel_n;
+            };
+        };
+    };
+    return targetImageData;
+};
+
 export default {
   data (){
     return {
       current_emotion: "None",
+      model_path: localStorage['model'] || 'mobilenet_from_example',
+      model: undefined,
     }
   },
   methods: {
@@ -130,24 +165,96 @@ export default {
       console.log("QQQ")
     },
     async getModel(){
-      const model = await tf.loadLayersModel('mobilenet/model.json');
-      window.model = model
+      const model = await tf.loadLayersModel(this.model_path+'/model.json');
+      // const model = await tf.loadLayersModel('mobilenet/model.json');
+      // window.model = model
       return model
     },
     async predictEmotion(){
       let face_img_array = await this.getFaceCrop()
-      face_img_array = this.normalize_face_img_array(face_img_array)
-      let model = await this.getModel()
+      
+      var canvas = document.getElementById('FaceCanvas');
+      var context = canvas.getContext('2d');
+      var img = document.getElementById('showFace');
+      canvas.width = 224;
+      canvas.height = 224;
+      context.drawImage(img, 0, 0, img.width, img.height, 0, 0, 224, 224);
+      
+      let img_data = context.getImageData(0, 0, 224, 224)
+      face_img_array = this.getRgbByImageData(img_data)
+      console.log({face_img_array})
+      let face_img_array_resized = []
+      face_img_array = nj.array([face_img_array])
+      face_img_array_resized = face_img_array.reshape(1, 224,224, 3)
+      // for(let i = 0; i < 224; i++){
+      //   let row = []
+      //   for(let j = 0; j < 224; j++){
+      //     row.push(face_img_array[i*224 + j])
+      //   }
+      //   face_img_array_resized.push(row)
+      // }
+      face_img_array = face_img_array_resized.tolist()
+      window.face_img_array_resized = face_img_array_resized
+      console.log({face_img_array_resized, face_img_array})
+      
+      
+      // console.log({origin_face_img_array})
+      // face_img_array = this.normalize_face_img_array(face_img_array)
+      // let model = await this.getModel()
+      let model = this.model
+      // console.log({face_img_array})
       face_img_array = tf.tensor(face_img_array)
-      face_img_array = tf.image.resizeBilinear(face_img_array, [224,224])
-      face_img_array = face_img_array.reshape([1, ...face_img_array.shape])
-      window.face_img_array = face_img_array
-      let result = model.predict(face_img_array)
-      let idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
-      result = (await result.data())
-      let argmax = result.indexOf(result.sort()[result.length-1])
-      let emotion = idx_to_class[argmax]
-      console.log({emotion, result})
+      
+      // face_img_array = face_img_array.reshape([1, 224,224,3])
+      // face_img_array = tf.image.resizeBilinear(face_img_array, [224,224])
+      let face_img_array_rgb = (await face_img_array.data())
+      // let face_img_array_rgb_finish = nj.array(face_img_array_rgb).reshape(224,224,3).tolist()
+      
+
+      face_img_array_rgb = nj.array(Array.from(face_img_array_rgb)).reshape(-1, 3).tolist()
+      this.showCanvasByImgRGB(face_img_array_rgb, 224, 224)
+
+      // axios({
+      //   method: "POST",
+      //   url: `https://home3.eason.tw/image`, 
+      //   headers: {
+      //           "accept": "application/json",
+      //           'Content-Type': 'application/json'
+      //   },
+      //   data: {
+      //       face_img_array: await face_img_array.data(),
+      //       face_img_array_rgb,
+      //   },
+      // }).then(response => {
+      //   console.log(response.data)
+      //   vue.current_emotion = response.data.emotion
+      // })
+      let result = await model.predict(face_img_array)
+      let emotion, idx_to_class, valance, arousal
+      if(result.length == 3){
+        valance = parseFloat(await result[0].data())
+        arousal = parseFloat(await result[1].data())
+        emotion = await result[2].data()
+      }else{
+        emotion = await result.data()
+        
+      }
+      console.log({emotion})
+      if(emotion.length == 11){
+        idx_to_class = {0: 'Neutral', 1: 'Happiness', 2: 'Sadness', 3: 'Surprise', 4: 'Fear', 5: 'Disgust', 6: 'Anger', 7: 'Contempt', 8: 'None', 9: 'Uncertain', 10: 'No-Face'}
+      }else{
+        idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
+      }
+      
+      
+      
+      
+      
+      let argmax = argMax(Array.from(emotion))
+      console.log({emotion, argmax})
+      emotion = idx_to_class[argmax]
+      this.current_emotion = emotion
+      console.log({valance, arousal, emotion, result})
       
     },
     normalize_face_img_array(face_img_array){
@@ -171,6 +278,7 @@ export default {
     },
     showCanvasByImgRGB(data, width, height, id='showImg'){
       console.log('showCanvasByImgRGB', {data, width, height, id})
+      // var canvas=document.getElementById("FaceCanvas");
       var canvas=document.createElement("canvas");
       var ctx=canvas.getContext("2d");
       // size the canvas to your desired image
@@ -187,6 +295,8 @@ export default {
 
       // set the img.src to the canvas data url
       image.src=canvas.toDataURL();
+
+      
 
     },
     hideGazerVideoContainer(){
@@ -212,13 +322,24 @@ export default {
     async clearGazer(){
       await webgazer.clearData()
     },
+    async pauseWebgazer(){
+      console.log('pauseWebgazer')
+      await webgazer.resume()
+      setTimeout(async () => {
+        await webgazer.pause()
+      }, 300)
+      
+    },
   },
   async mounted(){
     await webgazer.begin()
+    let vue = this
     setTimeout(async () => {
       // await webgazer.pause()
     }, 1000)
-    
+    setTimeout(async () => {
+      vue.model = await vue.getModel()
+    }, 1)
   },
 }
 </script>
