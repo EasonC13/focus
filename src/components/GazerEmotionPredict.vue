@@ -80,9 +80,8 @@ export default {
       const canvas = await this.createCanvasById("webgazerVideoFeed")
       // convert it to a usable data URL
       let b64img = canvas.toDataURL();
-      // console.log(prediction)
       let prediction = await webgazer.get_facemash_model_predict()
-      console.log(prediction)
+      
       return prediction
     },
     async getCurrent(){      
@@ -127,9 +126,7 @@ export default {
       let sup = 0
       if(face_crop.length % 2 == 1) sup = 1
       face_crop = face_crop.map(x => x.slice(x_min, x_max))
-      console.log({x_min, x_max, y_min, y_max})
       
-      console.log('face_crop', face_crop)
 
       let face_crop_1d = []
       for(var i = 0; i < face_crop.length; i++) face_crop_1d = face_crop_1d.concat(face_crop[i])
@@ -180,10 +177,8 @@ export default {
       }
       
       let argmax = argMax(Array.from(emotion))
-      console.log({emotion, argmax})
       emotion = idx_to_class[argmax]
       this.current_emotion = emotion
-      console.log({valance, arousal, emotion, result})
       
     },
     getRgbByImageData(ImageData){
@@ -196,7 +191,7 @@ export default {
       return outArray
     },
     showCanvasByImgRGB(data, width, height, id='showImg'){
-      console.log('showCanvasByImgRGB', {data, width, height, id})
+      // console.log('showCanvasByImgRGB', {data, width, height, id})
       // var canvas=document.getElementById("FaceCanvas");
       var canvas=document.createElement("canvas");
       var ctx=canvas.getContext("2d");
@@ -247,10 +242,10 @@ export default {
       
     },
     keepPredictEmotion(){
-      vue = this
+      let vue = this
       setInterval(async () => {
         vue.predictEmotion()
-      }, 1000)
+      }, 5000)
     }
   },
   async mounted(){
