@@ -28,6 +28,8 @@ export default {
         return {
             click_times: 0,
             total_need: 10,
+            fly_execute : 1,
+            fly_img_offset : [],
         }
     },
     mounted(){
@@ -41,6 +43,7 @@ export default {
           if(this.click_times > this.total_need/2){
               webgazer.showPredictionPoints(true)
           }
+          this.animateFly() ;
         },
         newPos( bWidth, bHeight ) {
             var nW = Math.floor( Math.random() * bWidth ) ;
@@ -52,38 +55,42 @@ export default {
             let blankWidth = window.innerWidth - document.getElementById('fly_playground').offsetLeft ;
             let blankHeight = window.innerHeight - document.getElementById('fly_playground').offsetTop ;
             let fly_img = document.getElementById( 'wreath' ) ;
+
             console.log( 'www', blankWidth, blankHeight ) ;
+            console.log( 'www', this.fly_img_offset ) ;
 
-            let fly_left = fly_img.offsetLeft ;
-            let fly_top = fly_img.offsetTop ;
-            let oldCoord = [ fly_img.offsetLeft, fly_img.offsetTop ] ;
-
-            window.setInterval( () => {
-                let newCoord = this.newPos( blankWidth - fly_img.width, blankHeight - fly_img.height ) ;
-                // console.log( "I'm in", oldCoord, newCoord ) ;
-                
-                $( '#wreath' ).animate( { left : fly_left + newCoord[ 0 ], top : fly_top + newCoord[ 1 ] }, 4000 ) ;                
-            }, 1000 ) ;
+            let newCoord = this.newPos( blankWidth - fly_img.width, blankHeight - fly_img.height ) ;
+            // console.log( "I'm in", oldCoord, newCoord ) ;
+            
+            $( '#wreath' ).animate( { left : this.fly_img_offset[ 0 ] + newCoord[ 0 ], top : this.fly_img_offset[ 1 ] + newCoord[ 1 ] }, 4000 ) ; 
 
         },
         fly() {
-            var timeOutId = window.setInterval( () => {
-                if ( document.getElementById('wreath') ) {
-                    // console.log( window.innerWidth - document.getElementById('fly_playground').offsetLeft, window.innerHeight - document.getElementById('fly_playground').offsetTop ) ;
-                    let fly_w = ( window.innerWidth - document.getElementById('fly_playground').offsetLeft ) / 10 ;
-                    let fly_h = ( window.innerHeight - document.getElementById('fly_playground').offsetTop ) / 6 ;
-                    let fly_img = document.getElementById( 'wreath' ) ;
-                    fly_img.style.display = 'block' ;
-                    fly_img.width = fly_w ;
-                    fly_img.height = fly_h ;
-                    window.clearInterval( timeOutId ) ;
+            if ( this.fly_execute ) {
+                console.log( "this shouldn't appear" ) ;
 
-                    // use js to do animation
-                    this.animateFly() ;
-                }
-                // console.log( "still checking" ) ;
-            }, 1000
-            ) ;
+                var timeOutId = window.setInterval( () => {
+                    if ( document.getElementById('wreath') ) {
+                        // console.log( window.innerWidth - document.getElementById('fly_playground').offsetLeft, window.innerHeight - document.getElementById('fly_playground').offsetTop ) ;
+                        // let fly_w = ( window.innerWidth - document.getElementById('fly_playground').offsetLeft ) / 10 ;
+                        let fly_h = ( window.innerHeight - document.getElementById('fly_playground').offsetTop ) / 6 ;
+                        let fly_img = document.getElementById( 'wreath' ) ;
+                        fly_img.style.display = 'block' ;
+                        fly_img.width = fly_h ;
+                        fly_img.height = fly_h ;
+                        window.clearInterval( timeOutId ) ;
+
+                        this.fly_execute = 0 ;
+                        this.fly_img_offset = [ fly_img.offsetLeft, fly_img.offsetTop ] ;
+
+                        // use js to do animation
+                        // this.animateFly() ;
+                    }
+                    // console.log( "still checking" ) ;
+                }, 1000
+                ) ;
+            }
+
         },
 
     }
