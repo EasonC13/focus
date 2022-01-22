@@ -3,6 +3,7 @@ import Router from 'vue-router'
 // import firebase from 'firebase';
 
 import helloworld from './components/HelloWorld.vue'
+import Menu from './components/Menu.vue'
 import test from './components/Test.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
@@ -14,7 +15,7 @@ const router =  new Router({
   routes: [
     {
       path: '/',
-      component: helloworld,
+      component: Menu,
     },
     {
       path: '/model',
