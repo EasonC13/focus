@@ -18,6 +18,10 @@ const router =  new Router({
       component: helloworld,
     },
     {
+      path: '/model',
+      component: GazerEmotionPredict,
+    },
+    {
       path: '/test',
       component: test,
     },
