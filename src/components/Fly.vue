@@ -1,16 +1,20 @@
 <template lang="">
   <div>
       <!-- <button @click="getCurrent">Get Point</button>
-      <button @click="pauseWebgazer">pauseWebgazer</button> -->
+      <button @click="pauseWebgazer">pauseWebgazer</button>
       <button>hideGazerVideoContainer</button>
       <button>ClearModel</button>
-      <!-- <button @click="getFaceCrop">getFaceCrop</button> -->
+      <button @click="getFaceCrop">getFaceCrop</button>
       <button>predictEmotion</button>
-      <button>keepPredictEmotion</button>
-      
+      <button>keepPredictEmotion</button> -->
+        <p class='h3'>校正模型</p>
+        <p class='h3'>請點擊花圈</p>
+        <p class='h4' v-if='total_need - click_times > 0'>您已經點擊 {{click_times}} 次<br>還需點擊 {{total_need - click_times}} 次來完成模型訓練</p>
+        <p v-else class='h4'>您已經完成視線軌跡追蹤模型的訓練</p>
         <div id="fly_playground">
 
-            <img id="wreath" src="../assets/wreath.png" style="display:none; position:absolute">
+            <img id="wreath" src="../assets/wreath.png" style="display:none; position:absolute"
+            @click='clap'>
             <!-- <div style="height: 120px;"></div> -->
 
             {{ fly() }}
@@ -18,15 +22,25 @@
   </div>
 </template>
 <script>
+var $ = require('jquery')
 export default {
     data() {
         return {
+            click_times: 0,
+            total_need: 10,
         }
+    },
+    mounted(){
+        webgazer.showPredictionPoints(false)
     },
     methods : {
         clap(){
           console.log("打到了")
-          this
+          this.click_times += 1
+          this.$emit('click')
+          if(this.click_times > this.total_need/2){
+              webgazer.showPredictionPoints(true)
+          }
         },
         newPos( bWidth, bHeight ) {
             var nW = Math.floor( Math.random() * bWidth ) ;
@@ -46,7 +60,7 @@ export default {
 
             window.setInterval( () => {
                 let newCoord = this.newPos( blankWidth - fly_img.width, blankHeight - fly_img.height ) ;
-                console.log( "I'm in", oldCoord, newCoord ) ;
+                // console.log( "I'm in", oldCoord, newCoord ) ;
                 
                 $( '#wreath' ).animate( { left : fly_left + newCoord[ 0 ], top : fly_top + newCoord[ 1 ] }, 4000 ) ;                
             }, 1000 ) ;

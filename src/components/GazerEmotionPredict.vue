@@ -1,5 +1,5 @@
 <template lang="">
-   <div>
+   <div class='mt-5'>
       <!--<button @click="getCurrent">Get Point</button>
       <button @click="pauseWebgazer">pauseWebgazer</button>
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
@@ -7,7 +7,7 @@
       <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
       <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
-      <Fly></Fly>
+      <Fly ></Fly>
       <div class='container'>
         <p v-if='current_emotion.length == 0'>請等待模型載入</p>
         <p v-else>現在情緒為： {{current_emotion}}</p>
