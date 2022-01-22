@@ -7,7 +7,7 @@
       <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
       <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
-      
+      <Fly></Fly>
       <div class='container'>
         <p v-if='current_emotion.length == 0'>請等待模型載入</p>
         <p v-else>現在情緒為： {{current_emotion}}</p>
@@ -61,6 +61,7 @@ function scaleImageData(originalImageData, targetWidth, targetHeight) {
     return targetImageData;
 };
 
+import Fly from './Fly.vue'
 export default {
   data (){
     return {
@@ -69,6 +70,9 @@ export default {
       model: undefined,
       start_predict_emotion: 0,
     }
+  },
+  components: {
+    Fly,
   },
   methods: {
     async createCanvasById(id){
@@ -111,7 +115,6 @@ export default {
       if(faceMesh == false){
         return []
       }
-      console.log({faceMesh})
       let mesh = faceMesh[0]['annotations']['silhouette']
       window.mesh = faceMesh[0]['annotations']['silhouette']
 
@@ -260,6 +263,8 @@ export default {
         let interval = setInterval(async () => {
           vue.predictEmotion()
         }, 5000)
+        document.getElementById('webgazerVideoContainer').style.top = '30%'
+        document.getElementById('webgazerVideoContainer').style.left = '10px'
         this.start_predict_emotion = interval
       }
       
@@ -267,6 +272,8 @@ export default {
   },
   async mounted(){
     await webgazer.begin()
+    webgazer.showVideo(true)
+    
     let vue = this
     setTimeout(async () => {
       // await webgazer.pause()
