@@ -27,7 +27,7 @@ export default {
         clap(){
           console.log("打到了")
           this
-        }
+        },
         newPos( bWidth, bHeight ) {
             var nW = Math.floor( Math.random() * bWidth ) ;
             var nH = Math.floor( Math.random() * bHeight ) ;
