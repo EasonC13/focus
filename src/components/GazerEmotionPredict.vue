@@ -1,19 +1,24 @@
 <template lang="">
-  <div>
-      <!-- <button @click="getCurrent">Get Point</button>
-      <button @click="pauseWebgazer">pauseWebgazer</button> -->
+   <div>
+      <!--<button @click="getCurrent">Get Point</button>
+      <button @click="pauseWebgazer">pauseWebgazer</button>
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
       <button @click="clearGazer">ClearModel</button>
-      <!-- <button @click="getFaceCrop">getFaceCrop</button> -->
+      <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
-      <button @click="keepPredictEmotion">keepPredictEmotion</button>
+      <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
       
-      
-      <p>{{current_emotion}}</p>
+      <div class='container'>
+        <p v-if='current_emotion.length == 0'>請等待模型載入</p>
+        <p v-else>現在情緒為： {{current_emotion}}</p>
+        <button @click="clearGazer" class='btn btn-secondary'>清空模型（重新訓練）</button>
 
+      </div>
+      <div v-show='false'>
       <img id='showImg' src=''>
       <img id='showFace' src=''>
       <canvas id='FaceCanvas'></canvas>
+      </div>
   </div>
 </template>
 <script>
@@ -59,9 +64,10 @@ function scaleImageData(originalImageData, targetWidth, targetHeight) {
 export default {
   data (){
     return {
-      current_emotion: "None",
+      current_emotion: "",
       model_path: localStorage['model'] || 'mobilenet_from_example',
       model: undefined,
+      start_predict_emotion: 0,
     }
   },
   methods: {
@@ -102,7 +108,10 @@ export default {
 
       // Get the boundries of the face, then crop the image to the face part only.
       let faceMesh = await this.getfaceMesh()
-
+      if(faceMesh == false){
+        return []
+      }
+      console.log({faceMesh})
       let mesh = faceMesh[0]['annotations']['silhouette']
       window.mesh = faceMesh[0]['annotations']['silhouette']
 
@@ -140,6 +149,10 @@ export default {
     },
     async predictEmotion(){
       let face_img_array = await this.getFaceCrop()
+      if(face_img_array.length == 0){
+        this.current_emotion = '找不到臉'
+        return 
+      }
       
       var canvas = document.getElementById('FaceCanvas');
       var context = canvas.getContext('2d');
@@ -242,10 +255,14 @@ export default {
       
     },
     keepPredictEmotion(){
-      let vue = this
-      setInterval(async () => {
-        vue.predictEmotion()
-      }, 5000)
+      if(this.start_predict_emotion == 0){
+        let vue = this
+        let interval = setInterval(async () => {
+          vue.predictEmotion()
+        }, 5000)
+        this.start_predict_emotion = interval
+      }
+      
     }
   },
   async mounted(){
@@ -257,6 +274,11 @@ export default {
     setTimeout(async () => {
       vue.model = await vue.getModel()
     }, 1)
+    window.addEventListener('gazerPredict', this.keepPredictEmotion)
+  },
+  beforeDestroy() {
+    window.removeEventListener('gazerPredict', this.keepPredictEmotion);
+    clearInterval(this.start_predict_emotion)
   },
 }
 </script>

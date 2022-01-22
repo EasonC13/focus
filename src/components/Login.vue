@@ -1,9 +1,9 @@
 <template>
   <div class="login">
     <h3>FocusPlus</h3>
-    <p class="text-secondary h4">Login Page</p>
+    <p class="text-secondary h4">登入頁面</p>
     <p class="h4">
-      Click the button to login by google <br>
+      點選按鈕以使用 Google 帳號繼續 <br>
     </p>
     <button @click="socialLogin" class="social-button">
         <img alt="Google Logo" src="https://png.monster/wp-content/uploads/2020/11/b64cc812d68e951149b3e1a21c9a49e7-12019a02.png">
