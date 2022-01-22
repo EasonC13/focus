@@ -9,16 +9,16 @@
       <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <li class="nav-item active">
-            <a class="nav-link" href="#">首頁</a>
+            <router-link :to="'/'" class="link nav-link">首頁</router-link>
           </li>
           <li class="nav-item">
             <router-link :to="'/model'" class="link nav-link">AI 模型</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">開始使用</a>
+            <router-link :to="'/'" class="link nav-link">開始使用</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">教師端</a>
+            <router-link :to="'/'" class="link nav-link">教師端登入</router-link>
           </li>
           <!-- <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>

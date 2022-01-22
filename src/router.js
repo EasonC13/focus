@@ -9,6 +9,7 @@ import fly from './components/Fly.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
 import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
+import PersonalUse from './components/PersonalUse.vue'
 
 Vue.use(Router)
 
@@ -16,7 +17,15 @@ const router =  new Router({
   routes: [
     {
       path: '/',
+      redirect: '/home',
+    },
+    {
+      path: '/home',
       component: Menu,
+    },
+    {
+      path: '/indvidual',
+      component: PersonalUse
     },
     {
       path: '/model',

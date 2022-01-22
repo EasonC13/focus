@@ -7,21 +7,24 @@
       <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
       <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
-      <Fly v-if='training'
-      @finish_training='finish_training'></Fly>
-      <button @click='finish_training'>Finish Training</button>
-      <div class='container'>
-        <p v-if='current_emotion.length == 0'>請等待模型載入</p>
-        <p v-else>現在情緒為： {{current_emotion}}</p>
-        <button @click="clearGazer" class='btn btn-secondary'
-        v-if='training'>完成訓練</button>
-        <button @click="clearGazer" class='btn btn-secondary'>清空模型（重新訓練）</button>
+      <div v-show='asPredictor==false'>
+        <Fly v-if='training'
+        @finish_training='finish_training'></Fly>
+        <button @click='finish_training'>Finish Training （測試用）</button>
+        <div class='container'>
+          <p v-if='current_emotion.length == 0'>請等待模型載入</p>
+          <p v-else>現在情緒為： {{current_emotion}}</p>
+          <button @click="clearGazer" class='btn btn-primary mr-1'
+          v-if='!training || trained'>完成訓練</button>
+          <button @click="clearGazer" class='btn btn-secondary ml-1'
+          v-if='!(!training || !trained)'>清空模型（重新訓練）</button>
 
-      </div>
-      <div v-show='false'>
-      <img id='showImg' src=''>
-      <img id='showFace' src=''>
-      <canvas id='FaceCanvas'></canvas>
+        </div>
+        <div v-show='false'>
+        <img id='showImg' src=''>
+        <img id='showFace' src=''>
+        <canvas id='FaceCanvas'></canvas>
+        </div>
       </div>
   </div>
 </template>
@@ -74,7 +77,15 @@ export default {
       model: undefined,
       start_predict_emotion: 0,
       training: false,
+      trained: false,
     }
+  },
+  props: {
+    asPredictor: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   components: {
     Fly,
@@ -108,6 +119,7 @@ export default {
   methods: {
     finish_training(){
       localStorage.setItem("trained", true)
+      this.trained = true
     },
     async createCanvasById(id){
       let video = document.getElementById(id)
@@ -210,25 +222,31 @@ export default {
       face_img_array = tf.tensor(face_img_array)
       
       let result = await model.predict(face_img_array)
-      let emotion, idx_to_class, valance, arousal
+      let emotion_prob, idx_to_class, valence, arousal
 
       if(result.length == 3){
-        valance = parseFloat(await result[0].data())
+        valence = parseFloat(await result[0].data())
         arousal = parseFloat(await result[1].data())
-        emotion = await result[2].data()
+        emotion_prob = await result[2].data()
       }else{
-        emotion = await result.data()
+        emotion_prob = await result.data()
+        valence = parseFloat(0)
+        arousal = parseFloat(0)
       }
 
-      if(emotion.length == 11){
+      if(emotion_prob.length == 11){
         idx_to_class = {0: 'Neutral', 1: 'Happiness', 2: 'Sadness', 3: 'Surprise', 4: 'Fear', 5: 'Disgust', 6: 'Anger', 7: 'Contempt', 8: 'None', 9: 'Uncertain', 10: 'No-Face'}
+        idx_to_class = {0: '平常心', 1: '開心', 2: '難過', 3: '驚訝', 4: '害怕', 5: '厭惡', 6: '生氣', 7: '鄙視', 8: '無表情', 9: '困惑', 10: '找不到臉'}
       }else{
         idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
+        idx_to_class={0: '憤怒', 1: '厭惡', 2: '害怕', 3: '高興', 4: '平常心', 5: '難過', 6: '驚訝'}
       }
       
-      let argmax = argMax(Array.from(emotion))
-      emotion = idx_to_class[argmax]
+      let argmax = argMax(Array.from(emotion_prob))
+      let emotion = idx_to_class[argmax]
       this.current_emotion = emotion
+
+      this.$emit("newPredict", {emotion, emotion_prob, valence, arousal})
       
     },
     getRgbByImageData(ImageData){
@@ -282,6 +300,8 @@ export default {
     },
     async clearGazer(){
       await webgazer.clearData()
+      localStorage.removeItem("trained")
+      window.location.reload()
     },
     async pauseWebgazer(){
       console.log('pauseWebgazer')
