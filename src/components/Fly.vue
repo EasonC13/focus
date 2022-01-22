@@ -54,11 +54,11 @@ export default {
             var timeOutId = window.setInterval( () => {
                 if ( document.getElementById('wreath') ) {
                     // console.log( window.innerWidth - document.getElementById('fly_playground').offsetLeft, window.innerHeight - document.getElementById('fly_playground').offsetTop ) ;
-                    let fly_w = ( window.innerWidth - document.getElementById('fly_playground').offsetLeft ) / 10 ;
+                    // let fly_w = ( window.innerWidth - document.getElementById('fly_playground').offsetLeft ) / 10 ;
                     let fly_h = ( window.innerHeight - document.getElementById('fly_playground').offsetTop ) / 6 ;
                     let fly_img = document.getElementById( 'wreath' ) ;
                     fly_img.style.display = 'block' ;
-                    fly_img.width = fly_w ;
+                    fly_img.width = fly_h ;
                     fly_img.height = fly_h ;
                     window.clearInterval( timeOutId ) ;
 
