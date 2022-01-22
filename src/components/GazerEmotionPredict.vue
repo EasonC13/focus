@@ -7,10 +7,14 @@
       <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
       <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
-      <Fly ></Fly>
+      <Fly v-if='training'
+      @finish_training='finish_training'></Fly>
+      <button @click='finish_training'>Finish Training</button>
       <div class='container'>
         <p v-if='current_emotion.length == 0'>請等待模型載入</p>
         <p v-else>現在情緒為： {{current_emotion}}</p>
+        <button @click="clearGazer" class='btn btn-secondary'
+        v-if='training'>完成訓練</button>
         <button @click="clearGazer" class='btn btn-secondary'>清空模型（重新訓練）</button>
 
       </div>
@@ -69,12 +73,42 @@ export default {
       model_path: localStorage['model'] || 'mobilenet_from_example',
       model: undefined,
       start_predict_emotion: 0,
+      training: false,
     }
   },
   components: {
     Fly,
   },
+  async mounted(){
+    window.addEventListener("hashchange", () => {window.location.reload()}, false);
+    
+    await webgazer.begin()
+    webgazer.showVideo(true)
+    
+    let vue = this
+    setTimeout(async () => {
+      // await webgazer.pause()
+    }, 1000)
+    setTimeout(async () => {
+      vue.model = await vue.getModel()
+    }, 1)
+    window.addEventListener('gazerPredict', this.keepPredictEmotion)
+
+    this.training = !(localStorage.getItem('trained') || false)
+    
+  },
+  beforeDestroy() {
+    console.log("DESTROY!")
+    window.removeEventListener('gazerPredict', this.keepPredictEmotion);
+    clearInterval(this.start_predict_emotion)
+  },
+  destroyed(){
+    // window.location.reload()
+  },
   methods: {
+    finish_training(){
+      localStorage.setItem("trained", true)
+    },
     async createCanvasById(id){
       let video = document.getElementById(id)
       const canvas = document.createElement("canvas");
@@ -269,23 +303,6 @@ export default {
       }
       
     }
-  },
-  async mounted(){
-    await webgazer.begin()
-    webgazer.showVideo(true)
-    
-    let vue = this
-    setTimeout(async () => {
-      // await webgazer.pause()
-    }, 1000)
-    setTimeout(async () => {
-      vue.model = await vue.getModel()
-    }, 1)
-    window.addEventListener('gazerPredict', this.keepPredictEmotion)
-  },
-  beforeDestroy() {
-    window.removeEventListener('gazerPredict', this.keepPredictEmotion);
-    clearInterval(this.start_predict_emotion)
   },
 }
 </script>
