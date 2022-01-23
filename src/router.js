@@ -8,6 +8,7 @@ import h337 from 'heatmap.js'
 import helloworld from './components/HelloWorld.vue'
 import Menu from './components/Menu.vue'
 import test from './components/Test.vue'
+import View from './components/ViewLog.vue'
 import fly from './components/Fly.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
@@ -41,6 +42,10 @@ const router =  new Router({
     {
       path: '/test',
       component: test,
+    },
+    {
+      path: '/view',
+      component: View,
     },
     {
       path: '/gazer',
