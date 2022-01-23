@@ -1,5 +1,9 @@
 <template>
-    <div class="heatmap"></div>
+<div class='heatmap'>
+        <img :src="'data:image/jpeg;base64,' + image_b64" 
+        :width='width' :height='height'
+        >
+        </div>
 </template>
 
 <script>
@@ -9,10 +13,33 @@ var $ = require('jquery')
 export default {
     data() {
         return {
-            points : [],
+            points: []
         }
     },
+    props: {
+      image_b64: {
+        type: String,
+        required: false,
+        default: ''
+      },
+      gazer_points: {
+        type: Array,
+        required: false,
+        default: () => []
+      },
+      width: {
+        type: Number,
+        required: false,
+        default: 1920
+      },
+      height: {
+        type: Number,
+        required: false,
+        default: 1080
+      },
     mounted() {
+        let newImg = new Image() ;
+        newImg.src = 'data:image/jpeg;base64,' + myJson[ 'base_64' ] ;
         // --- Download and create Img from base64 ---
         function downloadImg() {
             let newImg = new Image() ;
@@ -28,7 +55,7 @@ export default {
 
                 return myJson[ 'base64' ] ;
             } )
-
+            
         }
         downloadImg() ;
         // console.log( this.src ) ;
@@ -53,7 +80,10 @@ export default {
             // console.log( data ) ;
             return data ;
         }
+        console.log('CreatePoint', CreatePoint(100))
         this.points = CreatePoint( 100 ) ;
+        console.log(this.points)
+        this.points = this.gazer_points
         this.test() ;
     },
     methods : {
@@ -72,6 +102,7 @@ export default {
             heatmapInstance.setData(data);
         }
     }
+}
 }
 </script>
 

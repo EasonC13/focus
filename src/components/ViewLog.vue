@@ -1,10 +1,10 @@
 <template>
-    <div class="container" style="position:absolute;">
-        <div class="row">
-            <div class="col-sm-8 left_img">
+    <div class="container view_log_container" style="position:absolute;">
+        <div class="row row_">
+            <div class="col-sm-8 col-sm-8_ left_img">
                 <!-- <img src="../assets/personal_use.jpeg"> -->
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 col-sm-4_">
                 <div><span id="time">1 : 01 : 10</span></div>
                 <div>情緒 : <span id="emotion">開心</span></div>
                 <div>正向程度 : <span id="positive">普通</span></div>
@@ -13,7 +13,7 @@
                     匯出整體數據
                 </button>
             </div>
-            <div class="col-sm-12">
+            <div class="col-sm-12 col-sm-12_">
                 <input type="range" min="1" max="10" value="1" id="slider">
                 時間軸
             </div>
@@ -24,7 +24,7 @@
 <script></script>
 
 <style>
-.container {
+.view_log_container {
     width: 100vw;
     height: 80vh;
     left: 50vw;
@@ -48,14 +48,14 @@
     top: 0%;
     position: relative;
 }
-.col-sm-4 {
+.col-sm-4_ {
     margin-top: auto;
     margin-bottom: auto;
 }
-.col-sm-12 {
+.col-sm-12_ {
     padding: 0;
 }
-.row {
+.row_ {
     transform: translateY(-26%);
 }
 #slider {
