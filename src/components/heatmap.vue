@@ -1,11 +1,11 @@
 <template>
-    <div class="heatmap">
-        <!-- {{ test() }} -->
-    </div>
+    <div class="heatmap"></div>
 </template>
 
 <script>
 import * as h337 from 'heatmap.js';
+var $ = require('jquery')
+
 export default {
     data() {
         return {
@@ -13,9 +13,31 @@ export default {
         }
     },
     mounted() {
+        // --- Download and create Img from base64 ---
+        function downloadImg() {
+            let newImg = new Image() ;
+            fetch( 'https://focus.plus.backend.ntnu.best/api/v0/example_b64' )
+            .then( function( response ){
+                return response.json() ;
+            } )
+            .then( function( myJson ){
+                // console.log( "base64 string : ", myJson[ 'base_64' ] ) ;
+                newImg.src = 'data:image/jpeg;base64,' + myJson[ 'base_64' ] ;
+                document.getElementsByClassName( 'heatmap' )[ 0 ].appendChild( newImg ) ;
+                // console.log( newImg.src ) ;
+
+                return myJson[ 'base64' ] ;
+            } )
+
+        }
+        downloadImg() ;
+        // console.log( this.src ) ;
+
+        // --- For generating random points ---
         function random( min, max ) {
             return Math.random() * (max - min) + min;
         }
+
         function CreatePoint(count) {
             let data = [] ;
 
@@ -32,7 +54,6 @@ export default {
             return data ;
         }
         this.points = CreatePoint( 100 ) ;
-
         this.test() ;
     },
     methods : {
