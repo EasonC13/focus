@@ -16,6 +16,8 @@
     "core-js": "^3.6.5",
     "firebase": "^8.5.0",
     "gh-pages": "^3.2.3",
+    "heatmap.js": "^2.0.5",
+    "heatmapjs-vue": "0.0.5",
     "jquery": "^1.12.4",
     "numjs": "^0.16.1",
     "vue": "^2.6.11",
