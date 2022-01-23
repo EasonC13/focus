@@ -8,14 +8,16 @@
             <p>當前正向程度：{{currentValence}}</p>
         </div>
         <p v-else>{{currentStatus}}</p>
-        <button @click='screenshot'>Screenshot</button>
+        <!-- <button @click='screenshot'>Screenshot</button> -->
         
         <Predictor :asPredictor='true'
         @newPredict='handlePredict'></Predictor>
+        <MediaStream production></MediaStream>
     </div>
 </template>
 <script>
 import Predictor from './GazerEmotionPredict.vue'
+import MediaStream from './MediaStream.vue'
 function makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -40,9 +42,11 @@ let getStorage = function(key){
     }
 }
 
+
 export default {
     components: {
-        Predictor
+        Predictor,
+        MediaStream,
     },
     data(){
         return{
@@ -54,6 +58,7 @@ export default {
             recordingFlag: '紀錄中',
             mediaStream: undefined,
             current_gaze_log: [],
+            db: undefined,
         }
     },
     mounted(){
@@ -68,11 +73,31 @@ export default {
         }
         setStorage(this.id, logFormat)
         window.addEventListener('new gaze point', this.handleNewGazePoint)
+        this.init_indexedDB()
     },
     beforeDestroy(){
         window.removeEventListener('new gaze point', this.handleNewGazePoint)
     },
     methods: {
+        init_indexedDB(){
+            const request = indexedDB.open("imgs");
+            let db;
+            let vue = this
+
+            request.onsuccess = function() {
+                vue.db = request.result;
+                db = vue.db;
+                window.db = vue.db
+                console.log('request.onsuccess', {db})
+            };
+
+            request.onupgradeneeded = function() {
+            // The database did not previously exist, so create object stores and indexes.
+            const db = request.result;
+            const store = db.createObjectStore("imgs", {keyPath: "hash"});
+            const imageIndex = store.createIndex("b64", "base_64", {unique: true});
+            };
+        },
         handleNewGazePoint(e){
             
             let gaze = e.detail
@@ -81,7 +106,7 @@ export default {
             }else{
                 this.current_gaze_log.push(null)
             }
-            console.log(this.current_gaze_log)
+            // console.log(this.current_gaze_log)
             
         },
         handlePredict(data){
@@ -89,9 +114,21 @@ export default {
             let log = getStorage(this.id)
             let gaze_log = this.current_gaze_log
             this.current_gaze_log = []
+
+            let screenshot_id = makeid(8)
+            let screenshot_b64 = this.screenshot()
+            // setStorage(screenshot_id, screenshot_b64)
+            console.log("this.db", this.db)
+            const tx = this.db.transaction('imgs', 'readwrite')
+            const store = tx.objectStore('imgs')
+            store.put({base_64: screenshot_b64, hash: screenshot_id})
+            tx.oncomplete = function() {
+                // console.log("Store Finish")
+            };
             log.logs.push({
                 time: new Date().getTime(),
                 gaze_log: gaze_log,
+                screenshot_id: screenshot_id,
                 ...data})
             setStorage(this.id, log)
             console.log('handlePredict for', this.id, {log})
@@ -99,21 +136,11 @@ export default {
             this.currentArousal = data.arousal
             this.currentValence = data.valence
         },
-        async screenshot(){
-            if(this.mediaStream == undefined){
-                async function startCapture(displayMediaOptions) {
-                    let captureStream = null;
-
-                    try {
-                        captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-                    } catch(err) {
-                        console.error("Error: " + err);
-                    }
-                    return captureStream;
-                }
-                this.mediaStream = await startCapture()
-            }
-            window.mediaStream = this.mediaStream
+        screenshot(){
+            let screen_b64 = MediaStream.methods.getScreenShot()
+            // console.log({screen_b64})
+            console.log("screen shot")
+            return screen_b64
         }
     }
 }

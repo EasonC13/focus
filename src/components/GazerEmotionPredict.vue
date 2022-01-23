@@ -10,7 +10,7 @@
       <div v-show='asPredictor==false'>
         <Fly v-if='training'
         @finish_training='finish_training'></Fly>
-        <button @click='finish_training'>Finish Training （測試用）</button>
+        <!-- <button @click='finish_training'>Finish Training （測試用）</button> -->
         <div class='container'>
           <p v-if='training'></p>
           <p v-else-if='current_emotion.length == 0'>請等待模型載入</p>
@@ -89,6 +89,11 @@ export default {
       required: false,
       default: false
     },
+    showVideo: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
   components: {
     Fly,
@@ -109,9 +114,8 @@ export default {
     window.addEventListener('gazerPredict', this.keepPredictEmotion)
 
     this.training = !(localStorage.getItem('trained') || false)
-    if(asPredictor){
-      webgazer.showVideo(false)
-    }
+    webgazer.showVideo(this.showVideo)
+    
   },
   beforeDestroy() {
     console.log("DESTROY!")
@@ -322,9 +326,9 @@ export default {
       
     },
     async keepPredictEmotion(){
-      if(this.predict_emotion_interval == 0){
-        document.getElementById('webgazerVideoContainer').style.top = '30%'
-        document.getElementById('webgazerVideoContainer').style.left = '3%'
+      document.getElementById('webgazerVideoContainer').style.top = '30%'
+      document.getElementById('webgazerVideoContainer').style.left = '3%'
+      if(this.predict_emotion_interval == 0 && this.asPredictor){
         let vue = this
         let interval = setInterval(async () => {
           vue.predictEmotion()
@@ -335,7 +339,7 @@ export default {
           function sleep(second) {
             return new Promise(resolve => setTimeout(resolve, second * 1000));
           }
-          await webgazer.pause()
+          await webgazer.manual(true)
           while(true){
             try{
               await webgazer.loop()

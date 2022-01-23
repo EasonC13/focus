@@ -8,12 +8,13 @@
       <button>predictEmotion</button>
       <button>keepPredictEmotion</button> -->
         <p class='h3'>校正模型</p>
-        <p class='h3'>請點擊花圈</p>
+        <p class='h3'>請用滑鼠點擊蚊子</p>
         <p class='h4' v-if='total_need - click_times > 0'>您已經點擊 {{click_times}} 次<br>還需點擊 {{total_need - click_times}} 次來完成模型訓練</p>
         <p v-else class='h4'>您已經完成視線軌跡追蹤模型的訓練</p>
         <div id="fly_playground">
 
-            <img id="wreath" src="../assets/wreath.png" style="display:none; position:absolute"
+            <img id="wreath" src="../assets/wreath.png" 
+            style="display:none; position:absolute; left: 100px; top: 100px;"
             @click='clap'>
             <!-- <div style="height: 120px;"></div> -->
 
@@ -23,6 +24,21 @@
 </template>
 <script>
 var $ = require('jquery')
+let mnw = '5%'
+let mxw = '90%'
+let mid = '48%'
+let positions = [
+    [mxw, mxw],
+    [mxw, mnw],
+    [mnw, mxw],
+    [mnw, mnw],
+]
+let positions2 = [
+    [mxw, mid],
+    [mid, mnw],
+    // [mnw, mid],
+    [mid, mnw],
+]
 export default {
     data() {
         return {
@@ -32,6 +48,7 @@ export default {
             fly_img_offset : [],
             blank : [],
             corner : [],
+            prev: undefined,
         }
     },
     mounted(){
@@ -39,6 +56,7 @@ export default {
         setTimeout(() => {
             document.getElementById('fly_playground')
             $( '#wreath' ).animate( { left : '10%', top : '10%' }, 1 ) ; 
+            this.prev = ['10%', '10%']
         }, 1)
     },
     methods : {
@@ -49,7 +67,7 @@ export default {
           if(this.click_times > this.total_need/2){
               webgazer.showPredictionPoints(true)
           }
-          if(this.click_times > this.total_need){
+          if(this.click_times == this.total_need){
               this.$emit('finish_training')
           }
           this.animateFly() ;
@@ -68,18 +86,32 @@ export default {
             return [ nW, nH ] ;
         },
         animateFly() {
-            let blankWidth = window.innerWidth - document.getElementById('fly_playground').offsetLeft ;
-            let blankHeight = window.innerHeight - document.getElementById('fly_playground').offsetTop ;
-            let fly_img = document.getElementById( 'wreath' ) ;
+            // let blankWidth = window.innerWidth - document.getElementById('fly_playground').offsetLeft ;
+            // let blankHeight = window.innerHeight - document.getElementById('fly_playground').offsetTop ;
+            // let fly_img = document.getElementById( 'wreath' ) ;
 
-            console.log( 'www', blankWidth, blankHeight ) ;
-            console.log( 'www', this.fly_img_offset ) ;
-            console.log( 'www', this.corner ) ;
+            // console.log( 'www', blankWidth, blankHeight ) ;
+            // console.log( 'www', this.fly_img_offset ) ;
+            // console.log( 'www', this.corner ) ;
 
-            let newCoord = this.newPos( blankWidth - fly_img.width, blankHeight - fly_img.height ) ;
+            // let newCoord = this.newPos( blankWidth - fly_img.width, blankHeight - fly_img.height ) ;
             // console.log( "I'm in", oldCoord, newCoord ) ;
-            
-            $( '#wreath' ).animate( { left : this.fly_img_offset[ 0 ] + newCoord[ 0 ], top : this.fly_img_offset[ 1 ] + newCoord[ 1 ] }, 1000 ) ; 
+
+            let arr = []
+            let choice = this.prev
+
+            while(choice == this.prev){
+                if(this.click_times > this.total_need/2){
+                arr = [...positions, ...positions2]
+                choice = arr[Math.floor(Math.random() * arr.length)]
+                }else{
+                    arr = [...positions, ...positions]
+                    choice = arr[this.click_times]
+                }
+            }
+            this.prev = choice
+            console.log({arr, choice})
+            $( '#wreath' ).animate( { left : choice[0], top : choice[1]}, 1000 ) ; 
 
         },
         fly() {

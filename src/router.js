@@ -10,6 +10,7 @@ import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
 import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
 import PersonalUse from './components/PersonalUse.vue'
+import MediaStream from './components/MediaStream.vue'
 
 Vue.use(Router)
 
@@ -22,6 +23,10 @@ const router =  new Router({
     {
       path: '/home',
       component: Menu,
+    },
+    {
+      path: '/MediaStream',
+      component: MediaStream,
     },
     {
       path: '/indvidual',
