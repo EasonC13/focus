@@ -36,6 +36,10 @@ export default {
     },
     mounted(){
         webgazer.showPredictionPoints(false)
+        setTimeout(() => {
+            document.getElementById('fly_playground')
+            $( '#wreath' ).animate( { left : 100, top : 100 }, 1 ) ; 
+        }, 1)
     },
     methods : {
         clap(){
@@ -44,6 +48,9 @@ export default {
           this.$emit('click')
           if(this.click_times > this.total_need/2){
               webgazer.showPredictionPoints(true)
+          }
+          if(this.click_times > this.total_need){
+              this.$emit('finish_training')
           }
           this.animateFly() ;
         },
