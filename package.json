@@ -7,7 +7,7 @@
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "cname": "echo 'remote.ntnu.best' >> ./dist/CNAME"
+    "cname": "echo 'focus.gift' >> ./dist/CNAME"
   },
   "dependencies": {
     "@firebase/analytics": "^0.7.4",
