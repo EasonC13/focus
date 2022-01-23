@@ -1,11 +1,36 @@
 <template lang="">
     <div>
         
-        <div v-if='currentStatus == recordingFlag'>
+        <div v-if='currentStatus == recordingFlag||true'>
             <p>紀錄狀態：{{currentStatus}}</p>
             <p>當前情緒：{{currentEmotion}}</p>
             <p>當前精神狀態：{{currentArousal}}</p>
             <p>當前正向程度：{{currentValence}}</p>
+            <div>想要紀錄的數據：
+                <input type="checkbox" id="jack" class='m-1'
+                value="螢幕畫面+眼動資料" v-model="datas_want_to_log">
+                <label for="jack">螢幕畫面+眼動資料</label>
+                <input type="checkbox" class='m-1' id="john"
+                value="情緒" v-model="datas_want_to_log">
+                <label for="john">情緒</label>
+                <input type="checkbox" id="mike" class='m-1'
+                value="精神狀態" v-model="datas_want_to_log">
+                <label for="mike">精神狀態</label>
+                <br>{{datas_want_to_log}}
+            </div>
+            <div>想要分享的數據：
+                <input type="checkbox" id="jack" class='m-1'
+                value="螢幕畫面+眼動資料" v-model="datas_want_to_share">
+                <label for="jack">螢幕畫面+眼動資料</label>
+                <input type="checkbox" class='m-1' id="john"
+                value="情緒" v-model="datas_want_to_share">
+                <label for="john">情緒</label>
+                <input type="checkbox" id="mike" class='m-1'
+                value="精神狀態" v-model="datas_want_to_share">
+                <label for="mike">精神狀態</label>
+                <br>{{datas_want_to_share}}
+            </div>
+            
         </div>
         <p v-else>{{currentStatus}}</p>
         <!-- <button @click='screenshot'>Screenshot</button> -->
@@ -59,6 +84,38 @@ export default {
             mediaStream: undefined,
             current_gaze_log: [],
             db: undefined,
+            all_data_can_log: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
+            datas_want_to_log: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
+            datas_want_to_share: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
+            screen: `螢幕畫面+眼動資料`,
+        }
+    },
+    watch: {
+        datas_want_to_log: function(new_arr, old_arr){
+            // console.log({new_value, old_value})
+            let screen = this.screen
+            if(new_arr.includes(screen) && !old_arr.includes(screen)){
+                MediaStream.methods.StartScreenShot()
+            }
+            let ele
+            for(let i in this.all_data_can_log){
+                ele = this.all_data_can_log[i]
+                // console.log(ele, old_arr.includes(ele) , !new_arr.includes(ele), {old_arr, new_arr})
+                if(old_arr.includes(ele) && !new_arr.includes(ele)){
+                    this.remove_item_from_array(ele, this.datas_want_to_share);
+                }
+            }
+        },
+        datas_want_to_share: function(new_arr, old_arr){
+            let ele
+            for(let i in this.all_data_can_log){
+                ele = this.all_data_can_log[i]
+                // console.log(ele, old_arr.includes(ele) , !new_arr.includes(ele), {old_arr, new_arr})
+                if(!old_arr.includes(ele) && new_arr.includes(ele) &&
+                 !this.datas_want_to_log.includes(ele)){
+                    this.datas_want_to_log.push(ele)
+                }
+            }
         }
     },
     mounted(){
@@ -73,12 +130,23 @@ export default {
         }
         setStorage(this.id, logFormat)
         window.addEventListener('new gaze point', this.handleNewGazePoint)
+        window.addEventListener('MediaStream fail to get screen', this.noScreen)
+        
         this.init_indexedDB()
+
     },
     beforeDestroy(){
         window.removeEventListener('new gaze point', this.handleNewGazePoint)
+        window.removeEventListener('MediaStream fail to get screen', this.noScreen)
     },
     methods: {
+        remove_item_from_array(item, array){
+            array.splice(array.indexOf(item), 1);
+        },
+        noScreen(){
+            this.remove_item_from_array(this.screen, this.datas_want_to_log);
+            this.remove_item_from_array(this.screen, this.datas_want_to_share);
+        },
         init_indexedDB(){
             const request = indexedDB.open("imgs");
             let db;
@@ -117,18 +185,36 @@ export default {
 
             let screenshot_id = makeid(8)
             let screenshot_b64 = this.screenshot()
-            // setStorage(screenshot_id, screenshot_b64)
-            console.log("this.db", this.db)
             const tx = this.db.transaction('imgs', 'readwrite')
             const store = tx.objectStore('imgs')
-            store.put({base_64: screenshot_b64, hash: screenshot_id})
-            tx.oncomplete = function() {
+
+            if(!this.datas_want_to_log.includes(`螢幕畫面+眼動資料`)){
+                gaze_log = null
+                screenshot_id = null
+            }else{
+                // setStorage(screenshot_id, screenshot_b64)
+                console.log("this.db", this.db)
+                store.put({base_64: screenshot_b64, hash: screenshot_id})
+                tx.oncomplete = function() {
                 // console.log("Store Finish")
-            };
+                };
+            }
+
+            if(!this.datas_want_to_log.includes(`情緒`)){
+                data.emotion = null
+                data.emotion_prob = null
+            }
+
+            if(!this.datas_want_to_log.includes(`精神狀態`)){
+                data.valence = null
+                data.arousal = null
+            }
+            
             log.logs.push({
                 time: new Date().getTime(),
                 gaze_log: gaze_log,
                 screenshot_id: screenshot_id,
+                window_inner_size: [window.innerWidth, window.innerHeight],
                 ...data})
             setStorage(this.id, log)
             console.log('handlePredict for', this.id, {log})

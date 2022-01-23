@@ -45,7 +45,8 @@ async function startCapture() {
         videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
         dumpOptionsInfo();
     } catch(err) {
-        console.error("Error: " + err);
+        console.error("AAAAA Error: " + err);
+        window.dispatchEvent(new Event('MediaStream fail to get screen'))
     }
 }
 
@@ -76,6 +77,7 @@ export default {
         const stopElem = document.getElementById("stop");
 
         // Set event listeners for the start and stop buttons
+        let vue = this
         startElem.addEventListener("click", function(evt) {
         startCapture();
         }, false);
