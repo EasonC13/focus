@@ -1,13 +1,19 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 // import firebase from 'firebase';
+// heatmapjs for vue
+import heatmapjsVue from 'heatmapjs-vue' 
+import h337 from 'heatmap.js'
 
 import helloworld from './components/HelloWorld.vue'
 import Menu from './components/Menu.vue'
 import test from './components/Test.vue'
+import View from './components/ViewLog.vue'
 import fly from './components/Fly.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
+import heatMap from './components/heatmap.vue'
+import clickHeatMap from './components/clickHeatmap.vue'
 import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
 import PersonalUse from './components/PersonalUse.vue'
 import MediaStream from './components/MediaStream.vue'
@@ -15,6 +21,8 @@ import GroupRoom from './components/GroupRoom'
 import ExportLogToCsv from './components/ExportLogToCsv.vue'
 
 Vue.use(Router)
+Vue.use( heatmapjsVue )
+Vue.use( h337 )
 
 const router =  new Router({
   routes: [
@@ -51,8 +59,20 @@ const router =  new Router({
       component: test,
     },
     {
+      path: '/view',
+      component: View,
+    },
+    {
       path: '/gazer',
       component: Gazer,
+    },
+    {
+      path: '/heatmap',
+      component: heatMap,
+    },
+    {
+      path: '/clickHeatmap',
+      component: clickHeatMap,
     },
     {
       path: '/test_emotion_model',
