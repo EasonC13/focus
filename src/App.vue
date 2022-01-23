@@ -15,6 +15,9 @@ export default {
   name: 'App',
   components: {
     Nav,
+  },
+  created() {
+    console.clear()
   }
 }
 </script>

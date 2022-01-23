@@ -1,19 +1,31 @@
 <template lang="">
-  <div>
-      <!-- <button @click="getCurrent">Get Point</button>
-      <button @click="pauseWebgazer">pauseWebgazer</button> -->
+   <div class='mt-5'>
+      <!--<button @click="getCurrent">Get Point</button>
+      <button @click="pauseWebgazer">pauseWebgazer</button>
       <button @click="hideGazerVideoContainer">hideGazerVideoContainer</button>
       <button @click="clearGazer">ClearModel</button>
-      <!-- <button @click="getFaceCrop">getFaceCrop</button> -->
+      <button @click="getFaceCrop">getFaceCrop</button>
       <button @click="predictEmotion">predictEmotion</button>
-      <button @click="keepPredictEmotion">keepPredictEmotion</button>
-      
-      
-      <p>{{current_emotion}}</p>
+      <button @click="keepPredictEmotion">keepPredictEmotion</button> -->
+      <div v-show='asPredictor==false'>
+        <Fly v-if='training'
+        @finish_training='finish_training'></Fly>
+        <button @click='finish_training'>Finish Training （測試用）</button>
+        <div class='container'>
+          <p v-if='current_emotion.length == 0'>請等待模型載入</p>
+          <p v-else>現在情緒為： {{current_emotion}}</p>
+          <button @click="clearGazer" class='btn btn-primary mr-1'
+          v-if='!training || trained'>完成訓練</button>
+          <button @click="clearGazer" class='btn btn-secondary ml-1'
+          v-if='!(!training || !trained)'>清空模型（重新訓練）</button>
 
-      <img id='showImg' src=''>
-      <img id='showFace' src=''>
-      <canvas id='FaceCanvas'></canvas>
+        </div>
+        <div v-show='false'>
+        <img id='showImg' src=''>
+        <img id='showFace' src=''>
+        <canvas id='FaceCanvas'></canvas>
+        </div>
+      </div>
   </div>
 </template>
 <script>
@@ -56,15 +68,59 @@ function scaleImageData(originalImageData, targetWidth, targetHeight) {
     return targetImageData;
 };
 
+import Fly from './Fly.vue'
 export default {
   data (){
     return {
-      current_emotion: "None",
+      current_emotion: "",
       model_path: localStorage['model'] || 'mobilenet_from_example',
       model: undefined,
+      start_predict_emotion: 0,
+      training: false,
+      trained: false,
     }
   },
+  props: {
+    asPredictor: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+  },
+  components: {
+    Fly,
+  },
+  async mounted(){
+    window.addEventListener("hashchange", () => {window.location.reload()}, false);
+    
+    await webgazer.begin()
+    webgazer.showVideo(true)
+    
+    let vue = this
+    setTimeout(async () => {
+      // await webgazer.pause()
+    }, 1000)
+    setTimeout(async () => {
+      vue.model = await vue.getModel()
+    }, 1)
+    window.addEventListener('gazerPredict', this.keepPredictEmotion)
+
+    this.training = !(localStorage.getItem('trained') || false)
+    
+  },
+  beforeDestroy() {
+    console.log("DESTROY!")
+    window.removeEventListener('gazerPredict', this.keepPredictEmotion);
+    clearInterval(this.start_predict_emotion)
+  },
+  destroyed(){
+    // window.location.reload()
+  },
   methods: {
+    finish_training(){
+      localStorage.setItem("trained", true)
+      this.trained = true
+    },
     async createCanvasById(id){
       let video = document.getElementById(id)
       const canvas = document.createElement("canvas");
@@ -102,7 +158,9 @@ export default {
 
       // Get the boundries of the face, then crop the image to the face part only.
       let faceMesh = await this.getfaceMesh()
-
+      if(faceMesh == false){
+        return []
+      }
       let mesh = faceMesh[0]['annotations']['silhouette']
       window.mesh = faceMesh[0]['annotations']['silhouette']
 
@@ -140,6 +198,10 @@ export default {
     },
     async predictEmotion(){
       let face_img_array = await this.getFaceCrop()
+      if(face_img_array.length == 0){
+        this.current_emotion = '找不到臉'
+        return 
+      }
       
       var canvas = document.getElementById('FaceCanvas');
       var context = canvas.getContext('2d');
@@ -160,25 +222,31 @@ export default {
       face_img_array = tf.tensor(face_img_array)
       
       let result = await model.predict(face_img_array)
-      let emotion, idx_to_class, valance, arousal
+      let emotion_prob, idx_to_class, valence, arousal
 
       if(result.length == 3){
-        valance = parseFloat(await result[0].data())
+        valence = parseFloat(await result[0].data())
         arousal = parseFloat(await result[1].data())
-        emotion = await result[2].data()
+        emotion_prob = await result[2].data()
       }else{
-        emotion = await result.data()
+        emotion_prob = await result.data()
+        valence = parseFloat(0)
+        arousal = parseFloat(0)
       }
 
-      if(emotion.length == 11){
+      if(emotion_prob.length == 11){
         idx_to_class = {0: 'Neutral', 1: 'Happiness', 2: 'Sadness', 3: 'Surprise', 4: 'Fear', 5: 'Disgust', 6: 'Anger', 7: 'Contempt', 8: 'None', 9: 'Uncertain', 10: 'No-Face'}
+        idx_to_class = {0: '平常心', 1: '開心', 2: '難過', 3: '驚訝', 4: '害怕', 5: '厭惡', 6: '生氣', 7: '鄙視', 8: '無表情', 9: '困惑', 10: '找不到臉'}
       }else{
         idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
+        idx_to_class={0: '憤怒', 1: '厭惡', 2: '害怕', 3: '高興', 4: '平常心', 5: '難過', 6: '驚訝'}
       }
       
-      let argmax = argMax(Array.from(emotion))
-      emotion = idx_to_class[argmax]
+      let argmax = argMax(Array.from(emotion_prob))
+      let emotion = idx_to_class[argmax]
       this.current_emotion = emotion
+
+      this.$emit("newPredict", {emotion, emotion_prob, valence, arousal})
       
     },
     getRgbByImageData(ImageData){
@@ -232,6 +300,8 @@ export default {
     },
     async clearGazer(){
       await webgazer.clearData()
+      localStorage.removeItem("trained")
+      window.location.reload()
     },
     async pauseWebgazer(){
       console.log('pauseWebgazer')
@@ -242,21 +312,17 @@ export default {
       
     },
     keepPredictEmotion(){
-      let vue = this
-      setInterval(async () => {
-        vue.predictEmotion()
-      }, 5000)
+      if(this.start_predict_emotion == 0){
+        let vue = this
+        let interval = setInterval(async () => {
+          vue.predictEmotion()
+        }, 5000)
+        document.getElementById('webgazerVideoContainer').style.top = '30%'
+        document.getElementById('webgazerVideoContainer').style.left = '10px'
+        this.start_predict_emotion = interval
+      }
+      
     }
-  },
-  async mounted(){
-    await webgazer.begin()
-    let vue = this
-    setTimeout(async () => {
-      // await webgazer.pause()
-    }, 1000)
-    setTimeout(async () => {
-      vue.model = await vue.getModel()
-    }, 1)
   },
 }
 </script>

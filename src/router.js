@@ -3,11 +3,13 @@ import Router from 'vue-router'
 // import firebase from 'firebase';
 
 import helloworld from './components/HelloWorld.vue'
+import Menu from './components/Menu.vue'
 import test from './components/Test.vue'
 import fly from './components/Fly.vue'
 import login from './components/Login.vue'
 import Gazer from './components/Gazer.vue'
 import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
+import PersonalUse from './components/PersonalUse.vue'
 
 Vue.use(Router)
 
@@ -15,7 +17,19 @@ const router =  new Router({
   routes: [
     {
       path: '/',
-      component: helloworld,
+      redirect: '/home',
+    },
+    {
+      path: '/home',
+      component: Menu,
+    },
+    {
+      path: '/indvidual',
+      component: PersonalUse
+    },
+    {
+      path: '/model',
+      component: GazerEmotionPredict,
     },
     {
       path: '/test',
