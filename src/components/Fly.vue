@@ -38,7 +38,7 @@ export default {
         webgazer.showPredictionPoints(false)
         setTimeout(() => {
             document.getElementById('fly_playground')
-            $( '#wreath' ).animate( { left : 100, top : 100 }, 1 ) ; 
+            $( '#wreath' ).animate( { left : '10%', top : '10%' }, 1 ) ; 
         }, 1)
     },
     methods : {
