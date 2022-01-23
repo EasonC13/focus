@@ -16,7 +16,7 @@
                 <input type="checkbox" id="mike" class='m-1'
                 value="精神狀態" v-model="datas_want_to_log">
                 <label for="mike">精神狀態</label>
-                <br>{{datas_want_to_log}}
+                <!-- <br>{{datas_want_to_log}} -->
             </div>
             <div>想要分享的數據：
                 <input type="checkbox" id="jack" class='m-1'
@@ -28,19 +28,26 @@
                 <input type="checkbox" id="mike" class='m-1'
                 value="精神狀態" v-model="datas_want_to_share">
                 <label for="mike">精神狀態</label>
-                <br>{{datas_want_to_share}}
+                <!-- <br>{{datas_want_to_share}} -->
             </div>
             
         </div>
         <p v-else>{{currentStatus}}</p>
         <!-- <button @click='screenshot'>Screenshot</button> -->
-        
+        <p>在開始紀錄後，您可以前往其他視窗，自由的使用電腦。<br>
+        本平台會自動記錄您的情緒變化、精神狀態、眼動軌跡及螢幕畫面<br>
+        透過勾選上方選項，您可以決定哪些數據會被記錄<span v-if='group_mode'>或分享</span></p>
+        <button class='btn btn-secondary mr-1'>暫停紀錄</button>
+        <button class='btn btn-danger ml-1'>結束紀錄</button>
         <Predictor :asPredictor='true'
         @newPredict='handlePredict'></Predictor>
         <MediaStream production></MediaStream>
+
+            
     </div>
 </template>
 <script>
+const axios = require('axios');
 import Predictor from './GazerEmotionPredict.vue'
 import MediaStream from './MediaStream.vue'
 function makeid(length) {
@@ -73,6 +80,18 @@ export default {
         Predictor,
         MediaStream,
     },
+    props: {
+      group_mode: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
+      room_id: {
+        type: Number,
+        required: false,
+        default: -1
+      },
+  },
     data(){
         return{
             id: '',
@@ -209,18 +228,48 @@ export default {
                 data.valence = null
                 data.arousal = null
             }
-            
-            log.logs.push({
+            let new_log_data = {
                 time: new Date().getTime(),
                 gaze_log: gaze_log,
                 screenshot_id: screenshot_id,
                 window_inner_size: [window.innerWidth, window.innerHeight],
-                ...data})
+                ...data}
+            log.logs.push(new_log_data)
             setStorage(this.id, log)
             console.log('handlePredict for', this.id, {log})
             this.currentEmotion = data.emotion
             this.currentArousal = data.arousal
             this.currentValence = data.valence
+            console.log('this.group_mode',this.group_mode)
+            if(this.group_mode){
+              
+              this.shareLogData(new_log_data)
+            }
+        },
+        shareLogData(data, screenshot_b64){
+            let vue = this
+            axios({
+                method: "POST",
+                url: `https://focus.plus.backend.ntnu.best/api/v1/user/status`, 
+                headers: {
+                        "accept": "application/json",
+                        'Content-Type': 'application/json'
+                },
+                data: {
+                    account: firebase.auth().currentUser,
+                    room_id: this.room_id,
+                    arousal: data.arousal,
+                    valence: data.valence,
+                    emotion: data.emotion,
+                    emotion_prob: data.emotion_prob,
+                    gaze_log: data.gaze_log,
+                    screenshot_b64: screenshot_b64,
+                    window_inner_size: data.window_inner_size,
+                },
+            }).then(response => {
+                console.log('response.data', response.data)
+                
+            })
         },
         screenshot(){
             let screen_b64 = MediaStream.methods.getScreenShot()
