@@ -12,12 +12,14 @@
         @finish_training='finish_training'></Fly>
         <button @click='finish_training'>Finish Training （測試用）</button>
         <div class='container'>
-          <p v-if='current_emotion.length == 0'>請等待模型載入</p>
+          <p v-if='training'></p>
+          <p v-else-if='current_emotion.length == 0'>請等待模型載入</p>
           <p v-else>現在情緒為： {{current_emotion}}</p>
-          <button @click="clearGazer" class='btn btn-primary mr-1'
-          v-if='!training || trained'>完成訓練</button>
+          <p>training = {{training}}, trained = {{trained}}</p>
+          <router-link :to="'/'" @click="clearGazer" class='btn btn-primary mr-1'
+          v-if='training && trained'>完成訓練</router-link>
           <button @click="clearGazer" class='btn btn-secondary ml-1'
-          v-if='!(!training || !trained)'>清空模型（重新訓練）</button>
+          v-if='!(training) || trained'>清空模型（重新訓練）</button>
 
         </div>
         <div v-show='false'>
@@ -75,7 +77,8 @@ export default {
       current_emotion: "",
       model_path: localStorage['model'] || 'mobilenet_from_example',
       model: undefined,
-      start_predict_emotion: 0,
+      predict_emotion_interval: 0,
+      gazer_interval: 0,
       training: false,
       trained: false,
     }
@@ -106,12 +109,15 @@ export default {
     window.addEventListener('gazerPredict', this.keepPredictEmotion)
 
     this.training = !(localStorage.getItem('trained') || false)
-    
+    if(asPredictor){
+      webgazer.showVideo(false)
+    }
   },
   beforeDestroy() {
     console.log("DESTROY!")
     window.removeEventListener('gazerPredict', this.keepPredictEmotion);
-    clearInterval(this.start_predict_emotion)
+    clearInterval(this.predict_emotion_interval)
+    clearInterval(this.gazer_interval)
   },
   destroyed(){
     // window.location.reload()
@@ -197,6 +203,10 @@ export default {
       return model
     },
     async predictEmotion(){
+      if(this.training && !this.trained){
+        return false
+      }
+
       let face_img_array = await this.getFaceCrop()
       if(face_img_array.length == 0){
         this.current_emotion = '找不到臉'
@@ -311,15 +321,32 @@ export default {
       }, 300)
       
     },
-    keepPredictEmotion(){
-      if(this.start_predict_emotion == 0){
+    async keepPredictEmotion(){
+      if(this.predict_emotion_interval == 0){
+        document.getElementById('webgazerVideoContainer').style.top = '30%'
+        document.getElementById('webgazerVideoContainer').style.left = '3%'
         let vue = this
         let interval = setInterval(async () => {
           vue.predictEmotion()
         }, 5000)
-        document.getElementById('webgazerVideoContainer').style.top = '30%'
-        document.getElementById('webgazerVideoContainer').style.left = '10px'
-        this.start_predict_emotion = interval
+        this.predict_emotion_interval = interval
+        
+        let gazer_interval = setTimeout(async () => {
+          function sleep(second) {
+            return new Promise(resolve => setTimeout(resolve, second * 1000));
+          }
+          await webgazer.pause()
+          while(true){
+            try{
+              await webgazer.loop()
+              let gaze_point = await webgazer.getCurrentPrediction(0)
+              window.dispatchEvent(new CustomEvent('new gaze point', {"detail": gaze_point}))
+              await sleep(0.1)
+            }catch(e){console.log('error', e)}
+          }
+        }, 100)
+        this.gazer_interval = gazer_interval
+        
       }
       
     }

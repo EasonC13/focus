@@ -53,6 +53,7 @@ export default {
             currentStatus: '等待模型載入',
             recordingFlag: '紀錄中',
             mediaStream: undefined,
+            current_gaze_log: [],
         }
     },
     mounted(){
@@ -66,14 +67,34 @@ export default {
             logs: []
         }
         setStorage(this.id, logFormat)
+        window.addEventListener('new gaze point', this.handleNewGazePoint)
+    },
+    beforeDestroy(){
+        window.removeEventListener('new gaze point', this.handleNewGazePoint)
     },
     methods: {
+        handleNewGazePoint(e){
+            
+            let gaze = e.detail
+            if(gaze){
+                this.current_gaze_log.push([gaze.x, gaze.y])
+            }else{
+                this.current_gaze_log.push(null)
+            }
+            console.log(this.current_gaze_log)
+            
+        },
         handlePredict(data){
             this.currentStatus = this.recordingFlag;
             let log = getStorage(this.id)
-            log.logs.push({time: new Date().getTime(), ...data})
+            let gaze_log = this.current_gaze_log
+            this.current_gaze_log = []
+            log.logs.push({
+                time: new Date().getTime(),
+                gaze_log: gaze_log,
+                ...data})
             setStorage(this.id, log)
-            console.log(log)
+            console.log('handlePredict for', this.id, {log})
             this.currentEmotion = data.emotion
             this.currentArousal = data.arousal
             this.currentValence = data.valence
