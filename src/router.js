@@ -11,6 +11,7 @@ import Gazer from './components/Gazer.vue'
 import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
 import PersonalUse from './components/PersonalUse.vue'
 import MediaStream from './components/MediaStream.vue'
+import GroupRoom from './components/GroupRoom'
 
 Vue.use(Router)
 
@@ -31,6 +32,10 @@ const router =  new Router({
     {
       path: '/indvidual',
       component: PersonalUse
+    },
+    {
+      path: '/room',
+      component: GroupRoom
     },
     {
       path: '/model',
