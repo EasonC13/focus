@@ -39,8 +39,8 @@ export default {
         for(let i_ in log.logs[0].gaze_log){
             console.log(log.logs[0].gaze_log[i_])
             value = 50;
-            // this.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
-            this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
+            this.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
+            // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
         }
         console.log('this.gazer_points', this.gazer_points)
         const request = store.get(log.logs[0].screenshot_id);

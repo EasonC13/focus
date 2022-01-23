@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <h5 class="card-title">查看回放</h5>
                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <router-link :to="'/login'" class="link btn btn-primary">前往回放</router-link>
+                    <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
                 </div>
             </div>
         </div>

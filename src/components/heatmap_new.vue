@@ -1,9 +1,9 @@
 <template>
-    <div class="heatmap">
+<div class='heatmap'>
         <img :src="'data:image/jpeg;base64,' + image_b64" 
         :width='width' :height='height'
         >
-    </div>
+        </div>
 </template>
 
 <script>
@@ -13,63 +13,8 @@ var $ = require('jquery')
 export default {
     data() {
         return {
-            points : [],
+            points: []
         }
-    },
-    mounted() {
-        // --- Download and create Img from base64 ---
-        // function downloadImg() {
-        //     let newImg = new Image() ;
-        //     newImg.src = 'data:image/jpeg;base64,' + this.image_b64 ;
-        //     fetch( 'https://focus.plus.backend.ntnu.best/api/v0/example_b64' )
-        //     .then( function( response ){
-        //         return response.json() ;
-        //     } )
-        //     .then( function( myJson ){
-        //         // console.log( "base64 string : ", myJson[ 'base_64' ] ) ;
-        //         newImg.src = 'data:image/jpeg;base64,' + myJson[ 'base_64' ] ;
-        //         document.getElementsByClassName( 'heatmap' )[ 0 ].appendChild( newImg ) ;
-        //         // console.log( newImg.src ) ;
-
-        //         return myJson[ 'base64' ] ;
-        //     } )
-
-        // }
-        // downloadImg() ;
-        // console.log( this.src ) ;
-
-        // --- For generating random points ---
-        function random( min, max ) {
-            return Math.random() * (max - min) + min;
-        }
-
-        function CreatePoint(count) {
-            let data = [] ;
-
-            for (let i = 0; i < count; i++) {
-                let x = Math.floor(random(0, window.innerWidth));
-                let y = Math.floor(random(0, window.innerHeight));
-                let value = Math.floor(random(0, 100));
-
-                data.push( { x : x, y : y, value : value } ) ;
-
-
-            }
-            // console.log( data ) ;
-            return data ;
-        }
-        this.points = CreatePoint( 100 ) ;
-        this.points = []
-        console.log(this.points)
-        console.log("AAA this.gazer_points", this.gazer_points)
-        this.test() ;
-    },
-    watch:{
-        gazer_points: function(){
-            console.log("AAA this.gazer_points", this.gazer_points)
-            this.points = this.gazer_points
-            this.test()
-        },
     },
     props: {
       image_b64: {
@@ -92,6 +37,54 @@ export default {
         required: false,
         default: 1080
       },
+    mounted() {
+        let newImg = new Image() ;
+        newImg.src = 'data:image/jpeg;base64,' + myJson[ 'base_64' ] ;
+        // --- Download and create Img from base64 ---
+        function downloadImg() {
+            let newImg = new Image() ;
+            fetch( 'https://focus.plus.backend.ntnu.best/api/v0/example_b64' )
+            .then( function( response ){
+                return response.json() ;
+            } )
+            .then( function( myJson ){
+                // console.log( "base64 string : ", myJson[ 'base_64' ] ) ;
+                newImg.src = 'data:image/jpeg;base64,' + myJson[ 'base_64' ] ;
+                document.getElementsByClassName( 'heatmap' )[ 0 ].appendChild( newImg ) ;
+                // console.log( newImg.src ) ;
+
+                return myJson[ 'base64' ] ;
+            } )
+            
+        }
+        downloadImg() ;
+        // console.log( this.src ) ;
+
+        // --- For generating random points ---
+        function random( min, max ) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function CreatePoint(count) {
+            let data = [] ;
+
+            for (let i = 0; i < count; i++) {
+                let x = Math.floor(random(0, window.innerWidth));
+                let y = Math.floor(random(0, window.innerHeight));
+                let value = Math.floor(random(0, 100));
+
+                data.push( { x : x, y : y, value : value } ) ;
+
+
+            }
+            // console.log( data ) ;
+            return data ;
+        }
+        console.log('CreatePoint', CreatePoint(100))
+        this.points = CreatePoint( 100 ) ;
+        console.log(this.points)
+        this.points = this.gazer_points
+        this.test() ;
     },
     methods : {
         test() {
@@ -109,6 +102,7 @@ export default {
             heatmapInstance.setData(data);
         }
     }
+}
 }
 </script>
 
