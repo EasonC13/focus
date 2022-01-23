@@ -8,7 +8,7 @@
                 <div class="card">
                     <h5 class="card-header">團體使用介面</h5>
                     <div class="card-body">
-                        <Log group_mode :room_id='123'
+                        <Log group_mode :room_id='room_id'
                         v-if='true'></Log>
                         
                     </div>
@@ -20,7 +20,7 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>名稱</th>
+                                    <th>名字</th>
                                     <th>情緒</th>
                                     <th>精神狀態</th>
                                     <th>正向程度</th>
@@ -30,19 +30,35 @@
                             <tbody>
                                 <tr>
                                     <td></td>
-                                    <td>Tiger Nixon</td>
-                                    <td>System Architect</td>
-                                    <td>Edinburgh</td>
-                                    <td>61</td>
-                                    <td>2011/04/25</td>
+                                    <td>陳怡升</td>
+                                    <td>高興</td>
+                                    <td>0.5</td>
+                                    <td>0.2</td>
+                                    <td>pricean01@gmail.com</td>
                                 </tr>
                                 <tr>
                                     <td></td>
-                                    <td>Garrett Winters</td>
-                                    <td>Accountant</td>
-                                    <td>Tokyo</td>
-                                    <td>63</td>
-                                    <td>2011/07/25</td>
+                                    <td>羅國平</td>
+                                    <td>驚訝</td>
+                                    <td>0.9</td>
+                                    <td>0.8</td>
+                                    <td>40811012e@ntnu.edu.tw</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>林芝安</td>
+                                    <td>平常心</td>
+                                    <td>0.7</td>
+                                    <td>0.6</td>
+                                    <td>chris.heart25@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>游毓堂</td>
+                                    <td>高興</td>
+                                    <td>0.8</td>
+                                    <td>0.7</td>
+                                    <td>chris.heart25@gmail.com</td>
                                 </tr>
                                 
                             </tbody>
@@ -68,6 +84,16 @@ import Log from './LogData.vue'
 export default {
     components: {
         Log
+    },
+    data(){
+        return {
+        }
+    },
+    computed:{
+        room_id(){
+            console.log("this.$route.query.id", this.$route.query.id)
+            return this.$route.query.id
+        },
     },
     mounted(){
         var t = $('#example').DataTable( {

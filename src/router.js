@@ -12,6 +12,7 @@ import GazerEmotionPredict from './components/GazerEmotionPredict.vue'
 import PersonalUse from './components/PersonalUse.vue'
 import MediaStream from './components/MediaStream.vue'
 import GroupRoom from './components/GroupRoom'
+import ExportLogToCsv from './components/ExportLogToCsv.vue'
 
 Vue.use(Router)
 
@@ -24,6 +25,10 @@ const router =  new Router({
     {
       path: '/home',
       component: Menu,
+    },
+    {
+      path: '/ExportLogToCsv',
+      component: ExportLogToCsv,
     },
     {
       path: '/MediaStream',

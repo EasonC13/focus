@@ -20,9 +20,9 @@
                     <div class='d-inline-block form-inline'>
                         
                         <input style='width: 50%' class='mr-2 form-control'
-                        placeholder="# 輸入編號" v-on:keyup.enter='submit_room'>
-                        <button href="#" class="btn btn-primary" @click='submit_room'>進入房間</button>
-                        <button href="#" class="btn btn-link mt-1" @click='create_room'>創立您自己的房間</button>
+                        placeholder="# 輸入編號" v-on:keyup.enter='submit_room' v-model='input_room_id'>
+                        <button class="btn btn-primary" @click='submit_room'>進入房間</button>
+                        <button class="btn btn-link mt-1" @click='create_room'>創立您自己的房間</button>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <h5 class="card-title">查看回放</h5>
                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <router-link :to="'/login'" class="link btn btn-secondary">前往回放</router-link>
+                    <router-link :to="'/login'" class="link btn btn-primary">前往回放</router-link>
                 </div>
             </div>
         </div>
@@ -50,6 +50,7 @@
     data() {
       return {
         user: firebase.auth().currentUser,
+        input_room_id: '',
       }
     },
     mounted(){
@@ -59,10 +60,17 @@
     },
     methods: {
       submit_room(){
-
+        if(this.input_room_id.length == 0){
+          // alert("房間號請勿空白，\n已為您填入 Demo 用號碼")
+          this.input_room_id = '123'
+        }else{
+          this.$router.push({path: 'room', query: { id: this.input_room_id }})
+        }
+        
       },
       create_room(){
-
+        // get new room
+        this.$router.push({path: 'room', query: { id: '123' }})
       }
     }
   }

@@ -37,8 +37,15 @@
         <p>在開始紀錄後，您可以前往其他視窗，自由的使用電腦。<br>
         本平台會自動記錄您的情緒變化、精神狀態、眼動軌跡及螢幕畫面<br>
         透過勾選上方選項，您可以決定哪些數據會被記錄<span v-if='group_mode'>或分享</span></p>
-        <button class='btn btn-secondary mr-1'>暫停紀錄</button>
-        <button class='btn btn-danger ml-1'>結束紀錄</button>
+        <div v-if='!is_finish'>
+            <button class='btn btn-secondary mr-1' >暫停紀錄</button>
+            <button class='btn btn-danger ml-1' @click='finish'>結束紀錄</button>
+        </div>
+        <div v-else>
+            <ExportLogToCsv :storage_id='id'
+            ></ExportLogToCsv>
+            <p>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+        </div>
         <Predictor :asPredictor='true'
         @newPredict='handlePredict'></Predictor>
         <MediaStream production></MediaStream>
@@ -50,6 +57,7 @@
 const axios = require('axios');
 import Predictor from './GazerEmotionPredict.vue'
 import MediaStream from './MediaStream.vue'
+import ExportLogToCsv from './ExportLogToCsv.vue'
 function makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -79,6 +87,7 @@ export default {
     components: {
         Predictor,
         MediaStream,
+        ExportLogToCsv,
     },
     props: {
       group_mode: {
@@ -87,7 +96,7 @@ export default {
         default: false
       },
       room_id: {
-        type: Number,
+        type: String,
         required: false,
         default: -1
       },
@@ -107,6 +116,7 @@ export default {
             datas_want_to_log: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
             datas_want_to_share: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
             screen: `螢幕畫面+眼動資料`,
+            is_finish: false,
         }
     },
     watch: {
@@ -256,7 +266,8 @@ export default {
                         'Content-Type': 'application/json'
                 },
                 data: {
-                    account: firebase.auth().currentUser,
+                    display_name: localStorage.getItem('display_name') || firebase.auth().currentUser.displayName || "",
+                    account: firebase.auth().currentUser.email,
                     room_id: this.room_id,
                     arousal: data.arousal,
                     valence: data.valence,
@@ -276,6 +287,10 @@ export default {
             // console.log({screen_b64})
             console.log("screen shot")
             return screen_b64
+        },
+        finish(){
+            this.is_finish = true
+            this.currentStatus = "紀錄完成"
         }
     }
 }
