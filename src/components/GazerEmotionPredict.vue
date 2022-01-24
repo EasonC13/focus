@@ -160,6 +160,10 @@ export default {
       }
       return x, y     
     },
+    showViewOfAI(){
+        webgazer.showFaceOverlay(true)
+        webgazer.showFaceFeedbackBox(true)
+    },
     async getFaceCrop(){
       let canvas = await this.createCanvasById("webgazerVideoFeed")
       let ctx = canvas.getContext('2d')
@@ -353,6 +357,7 @@ export default {
             return new Promise(resolve => setTimeout(resolve, second * 1000));
           }
           await webgazer.manual(true)
+          this.showViewOfAI()
           while(true){
             try{
               await webgazer.loop()
