@@ -1,6 +1,8 @@
 <template>
   <div class="container mt-1">
-    <welcome></welcome>
+    <div class='w-100 container'>
+      <welcome></welcome>
+    </div>
       <div class="row mt-5">
         <div class="col-sm-4">
             <div class="card" style="width: 18rem;">

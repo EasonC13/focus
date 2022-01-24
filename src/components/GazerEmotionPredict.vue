@@ -12,10 +12,10 @@
         @finish_training='finish_training'></Fly>
         <!-- <button @click='finish_training'>Finish Training （測試用）</button> -->
         <div class='container'>
-          <p v-if='training'></p>
-          <p v-else-if='current_emotion.length == 0'>需要先訓練模型才能使用<br>請等待模型載入</p>
+          <p v-if='training'>需要先訓練模型才能使用<br>請等待模型載入後按照指示開始訓練</p>
+          <p v-else-if='current_emotion.length == 0'>在此您可以查看您的模型表現<br>或點選「清空模型」重新訓練</p>
           <p v-else>現在情緒為： {{current_emotion}}</p>
-          <p>training = {{training}}, trained = {{trained}}</p>
+          <!-- <p>training = {{training}}, trained = {{trained}}</p> -->
           <router-link :to="'/'" @click="clearGazer" class='btn btn-primary mr-1'
           v-if='training && trained'>完成訓練</router-link>
           <button @click="clearGazer" class='btn btn-secondary ml-1'
@@ -331,11 +331,16 @@ export default {
         return 0
       }
       this.start = true
-      let video = document.querySelectorAll('[id=webgazerVideoContainer]')
-      for(let i in video){
-        video[i].style.top = '30%'
-        video[i].style.left = '3%'
+      try{
+        let video = document.querySelectorAll('[id=webgazerVideoContainer]')
+        for(let i in video){
+          video[i].style.top = '30%'
+          video[i].style.left = '3%'
+        }
+      }catch(e){
+        console.log(e)
       }
+      
       if(this.predict_emotion_interval == 0 && this.asPredictor){
         let vue = this
         let interval = setInterval(async () => {
