@@ -8,7 +8,7 @@
       <button>predictEmotion</button>
       <button>keepPredictEmotion</button> -->
         <p class='h3'>校正模型</p>
-        <p class='h3'>請用滑鼠點擊蚊子</p>
+        <p class='h3'>請用滑鼠點擊花圈</p>
         <p class='h4' v-if='total_need - click_times > 0'>您已經點擊 {{click_times}} 次<br>還需點擊 {{total_need - click_times}} 次來完成模型訓練</p>
         <p v-else class='h4'>您已經完成視線軌跡追蹤模型的訓練</p>
         <div id="fly_playground">

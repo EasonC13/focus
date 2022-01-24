@@ -81,6 +81,7 @@ export default {
       gazer_interval: 0,
       training: false,
       trained: false,
+      start: false,
     }
   },
   props: {
@@ -326,8 +327,15 @@ export default {
       
     },
     async keepPredictEmotion(){
-      document.getElementById('webgazerVideoContainer').style.top = '30%'
-      document.getElementById('webgazerVideoContainer').style.left = '3%'
+      if(this.start){
+        return 0
+      }
+      this.start = true
+      let video = document.querySelectorAll('[id=webgazerVideoContainer]')
+      for(let i in video){
+        video[i].style.top = '30%'
+        video[i].style.left = '3%'
+      }
       if(this.predict_emotion_interval == 0 && this.asPredictor){
         let vue = this
         let interval = setInterval(async () => {

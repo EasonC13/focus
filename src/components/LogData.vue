@@ -147,12 +147,15 @@ export default {
             }
         }
     },
-    mounted(){
+    beforeCreate(){
         let trained = localStorage.getItem('trained') || false
         if(trained == false){
             this.$router.push('/model')
             return 0
         }
+    },
+    mounted(){
+        
         this.id = makeid(10)
         console.log(`Create new log session at id ${this.id}`)
         let ids = getStorage('ids') || []
