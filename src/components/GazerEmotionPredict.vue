@@ -82,6 +82,7 @@ export default {
       training: false,
       trained: false,
       start: false,
+      webgazer: webgazer,
     }
   },
   props: {
@@ -123,6 +124,7 @@ export default {
     window.removeEventListener('gazerPredict', this.keepPredictEmotion);
     clearInterval(this.predict_emotion_interval)
     clearInterval(this.gazer_interval)
+    this.webgazer.end()
   },
   destroyed(){
     // window.location.reload()
@@ -147,13 +149,13 @@ export default {
       const canvas = await this.createCanvasById("webgazerVideoFeed")
       // convert it to a usable data URL
       let b64img = canvas.toDataURL();
-      let prediction = await webgazer.get_facemash_model_predict()
+      let prediction = await this.webgazer.get_facemash_model_predict()
       
       return prediction
     },
     async getCurrent(){      
       // console.log("getPositions", webgazer.getTracker().getPositions())
-      let prediction = await webgazer.getCurrentPrediction();
+      let prediction = await this.webgazer.getCurrentPrediction();
       if (prediction) {
           var x = prediction.x;
           var y = prediction.y;
@@ -161,8 +163,8 @@ export default {
       return x, y     
     },
     showViewOfAI(){
-        webgazer.showFaceOverlay(true)
-        webgazer.showFaceFeedbackBox(true)
+        this.webgazer.showFaceOverlay(true)
+        this.webgazer.showFaceFeedbackBox(true)
     },
     async getFaceCrop(){
       let canvas = await this.createCanvasById("webgazerVideoFeed")
@@ -318,15 +320,15 @@ export default {
       document.getElementById("webgazerGazeDot").style.display = 'block'
     },
     async clearGazer(){
-      await webgazer.clearData()
+      await this.webgazer.clearData()
       localStorage.removeItem("trained")
       window.location.reload()
     },
     async pauseWebgazer(){
       console.log('pauseWebgazer')
-      await webgazer.resume()
+      await this.webgazer.resume()
       setTimeout(async () => {
-        await webgazer.pause()
+        await this.webgazer.pause()
       }, 300)
       
     },
@@ -356,12 +358,12 @@ export default {
           function sleep(second) {
             return new Promise(resolve => setTimeout(resolve, second * 1000));
           }
-          await webgazer.manual(true)
+          await this.webgazer.manual(true)
           this.showViewOfAI()
           while(true){
             try{
-              await webgazer.loop()
-              let gaze_point = await webgazer.getCurrentPrediction(0)
+              await this.webgazer.loop()
+              let gaze_point = await this.webgazer.getCurrentPrediction(0)
               window.dispatchEvent(new CustomEvent('new gaze point', {"detail": gaze_point}))
               await sleep(0.1)
             }catch(e){console.log('error', e)}

@@ -1,7 +1,7 @@
 <template lang="">
     <div>
         
-        <div v-if='currentStatus == recordingFlag||true'>
+        <div v-if='currentStatus == recordingFlag'>
             <p>紀錄狀態：{{currentStatus}}</p>
             <p>當前情緒：{{currentEmotion}}</p>
             <p>當前精神狀態：{{currentArousal}}</p>
@@ -30,23 +30,21 @@
                 <label for="mike">精神狀態</label>
                 <!-- <br>{{datas_want_to_share}} -->
             </div>
-            
-        </div>
-        <p v-else>{{currentStatus}}</p>
-        <!-- <button @click='screenshot'>Screenshot</button> -->
-        <p>在開始紀錄後，您可以前往其他視窗，自由的使用電腦。<br>
-        本平台會自動記錄您的情緒變化、精神狀態、眼動軌跡及螢幕畫面<br>
-        透過勾選上方選項，您可以決定哪些數據會被記錄<span v-if='group_mode'>或分享</span></p>
-        <div v-if='!is_finish'>
+            <p>在開始紀錄後，您可以前往其他視窗，自由的使用電腦。<br>
+            本平台會自動記錄您的情緒變化、精神狀態、眼動軌跡及螢幕畫面<br>
+            透過勾選上方選項，您可以決定哪些數據會被記錄<span v-if='group_mode'>或分享</span></p>
             <button class='btn btn-secondary mr-1' >暫停紀錄</button>
             <button class='btn btn-danger ml-1' @click='finish'>結束紀錄</button>
         </div>
-        <div v-else>
+        <div v-else-if='currentStatus == "紀錄完成"'>
+            <p>{{currentStatus}}</p>
             <ExportLogToCsv :storage_id='id'
             ></ExportLogToCsv>
             <p>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+            <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
         </div>
-        <div v-if='is_ready'>
+        <div v-else><p>{{currentStatus}}</p></div>
+        <div v-if='is_ready && !(currentStatus == "紀錄完成")'>
             <Predictor :asPredictor='true'
             @newPredict='handlePredict'></Predictor>
             <MediaStream production></MediaStream>
@@ -155,10 +153,9 @@ export default {
             this.$router.push('/model')
             return 0
         }
-        this.is_ready = true
     },
     mounted(){
-        
+        this.is_ready = true
         this.id = makeid(10)
         console.log(`Create new log session at id ${this.id}`)
         let ids = getStorage('ids') || []
@@ -178,6 +175,11 @@ export default {
     beforeDestroy(){
         window.removeEventListener('new gaze point', this.handleNewGazePoint)
         window.removeEventListener('MediaStream fail to get screen', this.noScreen)
+        let log = getStorage(this.id)
+        if(log.logs.length == 0){
+            localStorage.removeItem(this.id)
+            console.log("remove log because no data logged.")
+        }
     },
     methods: {
         remove_item_from_array(item, array){
@@ -226,7 +228,7 @@ export default {
             let screenshot_id = makeid(8)
             let screenshot_b64 = this.screenshot()
             const tx = this.db.transaction('imgs', 'readwrite')
-            console.log('tx', tx)
+            // console.log('tx', tx)
             const store = tx.objectStore('imgs')
 
             if(!this.datas_want_to_log.includes(`螢幕畫面+眼動資料`)){
@@ -259,11 +261,11 @@ export default {
                 ...data}
             log.logs.push(new_log_data)
             setStorage(this.id, log)
-            console.log('handlePredict for', this.id, {log})
+            // console.log('handlePredict for', this.id, {log})
             this.currentEmotion = data.emotion
             this.currentArousal = data.arousal
             this.currentValence = data.valence
-            console.log('this.group_mode',this.group_mode)
+            // console.log('this.group_mode',this.group_mode)
             if(this.group_mode){
               
               this.shareLogData(new_log_data)
