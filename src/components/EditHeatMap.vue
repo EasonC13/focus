@@ -8,12 +8,6 @@
 <script>
 import heatmap from './heatmap.vue'
 
-const request = indexedDB.open("imgs");
-let db;
-
-request.onsuccess = function() {
-  db = request.result;
-};
 
 
 export default {
@@ -27,32 +21,40 @@ export default {
         }
     },
     mounted(){
-        let id = localStorage.getItem('ids')[8]
-        let log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
-        console.log(log.logs[0])
-        const tx = db.transaction('imgs', 'readwrite')
-        const store = tx.objectStore('imgs')
+        let request = indexedDB.open("imgs");
+        let db;
         let vue = this
-        // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
-        this.gazer_points = []
-        let value = 50;
-        for(let i_ in log.logs[0].gaze_log){
-            console.log(log.logs[0].gaze_log[i_])
-            value = 50;
-            this.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
-            // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
-        }
-        console.log('this.gazer_points', this.gazer_points)
-        const request = store.get(log.logs[0].screenshot_id);
         request.onsuccess = function() {
-        const matching = request.result;
-        if (matching !== undefined) {
-            vue.b64 = matching.base_64.split(',')[1]
-        } else {
-            // No match was found.
-            console.log('No match was found.')
-        }
+            db = request.result;
+            setTimeout(() => {db.close}, 1000)
+            let id = localStorage.getItem('ids')[8]
+            let log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
+            console.log(log.logs[0])
+            const tx = db.transaction('imgs', 'readwrite')
+            const store = tx.objectStore('imgs')
+            
+            // vue.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
+            vue.gazer_points = []
+            let value = 50;
+            for(let i_ in log.logs[0].gaze_log){
+                console.log(log.logs[0].gaze_log[i_])
+                value = 50;
+                vue.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
+                // vue.gazer_points.push( { x : 100, y : 100, value : value } ) ;
+            }
+            console.log('vue.gazer_points', vue.gazer_points)
+            const request = store.get(log.logs[0].screenshot_id);
+            request.onsuccess = function() {
+            const matching = request.result;
+            if (matching !== undefined) {
+                vue.b64 = matching.base_64.split(',')[1]
+            } else {
+                // No match was found.
+                console.log('No match was found.')
+            }
+            };
         };
+        
     }
 }
 </script>

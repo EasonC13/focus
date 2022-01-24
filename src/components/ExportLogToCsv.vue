@@ -7,12 +7,7 @@
     </div>
 </template>
 <script>
-const request = indexedDB.open("imgs");
-let db;
 
-request.onsuccess = function() {
-  db = request.result;
-};
 
 function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -69,13 +64,20 @@ export default {
         }
     },
     mounted(){
+      let request = indexedDB.open("imgs");;
+      let db;
+      let vue = this
 
+      request.onsuccess = function() {
+        vue.db = request.result;
+      };
     },
     beforeDestroy(){
-        db.close()
+        this.db.close()
     },
     methods: {
         async exportCSV(){
+          let db = this.db
             console.log(db)
             let data = JSON.parse(localStorage.getItem(this.storage_id))
             console.log(data)

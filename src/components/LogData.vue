@@ -46,10 +46,11 @@
             ></ExportLogToCsv>
             <p>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
         </div>
-        <Predictor :asPredictor='true'
-        @newPredict='handlePredict'></Predictor>
-        <MediaStream production></MediaStream>
-
+        <div v-if='is_ready'>
+            <Predictor :asPredictor='true'
+            @newPredict='handlePredict'></Predictor>
+            <MediaStream production></MediaStream>
+        </div>
             
     </div>
 </template>
@@ -98,7 +99,7 @@ export default {
       room_id: {
         type: String,
         required: false,
-        default: -1
+        default: '-1'
       },
   },
     data(){
@@ -117,6 +118,7 @@ export default {
             datas_want_to_share: [`螢幕畫面+眼動資料`, `情緒`, `精神狀態`],
             screen: `螢幕畫面+眼動資料`,
             is_finish: false,
+            is_ready: false,
         }
     },
     watch: {
@@ -153,6 +155,7 @@ export default {
             this.$router.push('/model')
             return 0
         }
+        this.is_ready = true
     },
     mounted(){
         
@@ -197,7 +200,7 @@ export default {
             };
 
             request.onupgradeneeded = function() {
-            // The database did not previously exist, so create object stores and indexes.
+            console.log('The database did not previously exist, so create object stores and indexes.')
             const db = request.result;
             const store = db.createObjectStore("imgs", {keyPath: "hash"});
             const imageIndex = store.createIndex("b64", "base_64", {unique: true});
@@ -223,6 +226,7 @@ export default {
             let screenshot_id = makeid(8)
             let screenshot_b64 = this.screenshot()
             const tx = this.db.transaction('imgs', 'readwrite')
+            console.log('tx', tx)
             const store = tx.objectStore('imgs')
 
             if(!this.datas_want_to_log.includes(`螢幕畫面+眼動資料`)){
@@ -236,6 +240,7 @@ export default {
                 // console.log("Store Finish")
                 };
             }
+            
 
             if(!this.datas_want_to_log.includes(`情緒`)){
                 data.emotion = null

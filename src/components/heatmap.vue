@@ -59,15 +59,16 @@ export default {
             return data ;
         }
         this.points = CreatePoint( 100 ) ;
-        this.points = []
+        this.points = this.gazer_points
         console.log(this.points)
         console.log("AAA this.gazer_points", this.gazer_points)
         this.test() ;
     },
     watch:{
         gazer_points: function(){
-            console.log("AAA this.gazer_points", this.gazer_points)
+            console.log("AAB this.gazer_points", this.gazer_points)
             this.points = this.gazer_points
+            document.getElementsByClassName('heatmap-canvas')[0].remove()
             this.test()
         },
     },
@@ -79,8 +80,7 @@ export default {
       },
       gazer_points: {
         type: Array,
-        required: false,
-        default: () => []
+        required: true
       },
       width: {
         type: Number,
@@ -94,9 +94,12 @@ export default {
       },
     },
     methods : {
+        updateGazerPoint(){
+
+        },
         test() {
-            console.log( this.points ) ;
-            
+            // console.log( this.points ) ;
+            console.log("create heat map at", document.querySelector('.heatmap'))
             const heatmapInstance = h337.create( {
                 container : document.querySelector('.heatmap'),  
             } ) ;

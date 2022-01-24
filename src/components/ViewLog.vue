@@ -1,8 +1,8 @@
 <template>
     <div class="container view_log_container" style="position:absolute;">
         <div class="row row_">
-            <div class="col-sm-8 col-sm-8_ left_img">
-                <heatmap :image_b64='b64' :width='1280' :height='720'
+            <div class="col-sm-8 col-sm-8_ left_img" v-if='showHeatMap'>
+                <heatmap :image_b64='b64' :width='img_width' :height='img_height' :gazer_points="gazer_points"
                 ></heatmap>
             </div>
             <div class="col-sm-4 col-sm-4_">
@@ -25,11 +25,11 @@
                 <p>完整版包含情緒機率、截圖、與眼動。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
             </div>
             <div class="col-sm-12 col-sm-12_">
-                <input type="range" min="1" :max="total_data_length" value="1" id="slider" v-model='idx'>
+                <input type="range" min="0" :max="total_data_length - 1" value="1" id="slider" v-model='idx'>
                 時間軸
             </div>
         </div>
-        <span>{{currentLog}}</span>
+        <!-- <span>{{currentLog}}</span> -->
     </div>
 </template>
 
@@ -37,12 +37,6 @@
 import heatmap from './heatmap.vue'
 import ExportLogToCsv from './ExportLogToCsv.vue'
 
-const request = indexedDB.open("imgs");
-let db;
-
-request.onsuccess = function() {
-  db = request.result;
-};
 
 let all_data = JSON.parse(localStorage.getItem('ids'))
 export default {
@@ -53,6 +47,7 @@ export default {
     data(){
         return {
             dataList: [],
+            logList: [],
             currentData: '',
             total_data_length: 1,
             b64: '',
@@ -62,6 +57,9 @@ export default {
             timeStamp: '',
             db: null,
             idx: 0,
+            showHeatMap: true,
+            img_width: 1280,
+            img_height: 720,
         }
     },
     computed:{
@@ -72,7 +70,7 @@ export default {
         }
     },
     mounted(){
-        const request = indexedDB.open("imgs");
+        const request = indexedDB.open("imgs");;
         let vue = this;
 
         request.onsuccess = function() {
@@ -84,7 +82,7 @@ export default {
     watch: {
         idx: function(){
             this.initFrame()
-        }
+        },
     },
     methods: {
         init(){
@@ -94,15 +92,15 @@ export default {
             this.$router.replace({ query: { data: this.currentData} }).catch(()=>{});
             
             let log = JSON.parse(localStorage.getItem(this.currentData))
-            log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
+            // log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
             console.log({log})
             if(log == null){
-                alert("無效記錄檔，即將刷新頁面")
+                alert("無效記錄檔")
                 this.$router.replace({ query: { data: null } }).catch(()=>{});
-                window.location.reload()
+                // window.location.reload()
             }
             this.total_data_length = log.logs.length
-            this.dataList = log.logs
+            this.logList = log.logs
             this.initFrame()
             window.vm = this
 
@@ -114,8 +112,6 @@ export default {
             //     idx = 0
             // }
             // this.$router.push({ query: { ...this.$route.query, idx: idx } }).catch(()=>{});
-            const tx = this.db.transaction('imgs', 'readwrite')
-            const store = tx.objectStore('imgs')
             
             
             
@@ -147,7 +143,10 @@ export default {
         },
         initFrame(){
             let idx = this.idx
-            let log = this.dataList[idx]
+            let log = this.logList[idx]
+            if(log==undefined && idx == 0){
+                alert('紀錄檔內無內容')
+            }
             this.timeStamp = new Date(log.time)
             this.emotion = log.emotion
             this.arousal = log.arousal
@@ -160,22 +159,28 @@ export default {
             this.gazer_points = []
             let value = 50;
             console.log({log})
+            
             for(let i_ in log.gaze_log){
+                if(log.gaze_log[i_] == null)continue
                 console.log(log.gaze_log[i_])
                 value = 50;
-                this.gazer_points.push( { x : log.gaze_log[i_][0], y : log.gaze_log[i_][1], value : value } ) ;
+                this.gazer_points.push( { 
+                    x : Number.parseInt(log.gaze_log[i_][0]/log.window_inner_size[0]*this.img_width), 
+                    y : Number.parseInt(log.gaze_log[i_][1]/log.window_inner_size[1]*this.img_height), 
+                    value : value } ) ;
                 // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
             }
             console.log('this.gazer_points', this.gazer_points)
             const request = store.get(log.screenshot_id);
             request.onsuccess = function() {
-            const matching = request.result;
-            if (matching !== undefined) {
-                vue.b64 = matching.base_64.split(',')[1]
-            } else {
-                // No match was found.
-                console.log('No match was found.')
-            }
+                let matching = request.result;
+                if (matching !== undefined) {
+                    console.log({matching})
+                    vue.b64 = matching.base_64.split(',')[1]
+                } else {
+                    // No match was found.
+                    console.log('No match was found.')
+                }
             };
         },
     }
