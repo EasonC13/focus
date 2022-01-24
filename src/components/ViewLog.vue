@@ -2,26 +2,186 @@
     <div class="container view_log_container" style="position:absolute;">
         <div class="row row_">
             <div class="col-sm-8 col-sm-8_ left_img">
-                <!-- <img src="../assets/personal_use.jpeg"> -->
+                <heatmap :image_b64='b64' :width='1280' :height='720'
+                ></heatmap>
             </div>
             <div class="col-sm-4 col-sm-4_">
-                <div><span id="time">1 : 01 : 10</span></div>
-                <div>情緒 : <span id="emotion">開心</span></div>
-                <div>正向程度 : <span id="positive">普通</span></div>
-                <button type="button" id="submit_btn">
-                    <img id="btn_img" src="../assets/submit_btn.png">
-                    匯出整體數據
+                <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentData}} (點我切換紀錄)
                 </button>
+                <div class="dropdown-menu overflow-auto" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" :key='index' @click='selectNewData(item)'
+                    v-for="(item, index) in dataList">{{item}}</a>
+                </div>
+                </div>
+                
+                <div><span id="time">{{timeStamp}}</span></div>
+                <div>情緒 : <span id="emotion">{{emotion}}</span></div>
+                <div>正向程度 : <span id="positive">{{valence}}</span></div>
+                <div>精神狀態 : <span id="positive">{{arousal}}</span></div>
+                <br><br>
+                <ExportLogToCsv :storage_id='currentData' :showHint='false'></ExportLogToCsv>
+                <p>完整版包含情緒機率、截圖、與眼動。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
             </div>
             <div class="col-sm-12 col-sm-12_">
-                <input type="range" min="1" max="10" value="1" id="slider">
+                <input type="range" min="1" :max="total_data_length" value="1" id="slider" v-model='idx'>
                 時間軸
             </div>
         </div>
+        <span>{{currentLog}}</span>
     </div>
 </template>
 
-<script></script>
+<script>
+import heatmap from './heatmap.vue'
+import ExportLogToCsv from './ExportLogToCsv.vue'
+
+const request = indexedDB.open("imgs");
+let db;
+
+request.onsuccess = function() {
+  db = request.result;
+};
+
+let all_data = JSON.parse(localStorage.getItem('ids'))
+export default {
+    components: {
+        ExportLogToCsv,
+        heatmap,
+    },
+    data(){
+        return {
+            dataList: [],
+            currentData: '',
+            total_data_length: 1,
+            b64: '',
+            emotion: '',
+            valence: '',
+            arousal: '',
+            timeStamp: '',
+            db: null,
+            idx: 0,
+        }
+    },
+    computed:{
+        currentLog: function(){
+            let log = localStorage.getItem(this.currentData)
+            console.log(log)
+            return log
+        }
+    },
+    mounted(){
+        const request = indexedDB.open("imgs");
+        let vue = this;
+
+        request.onsuccess = function() {
+            vue.db = request.result;
+            vue.init()
+        };
+        // this.init()
+    },
+    watch: {
+        idx: function(){
+            this.initFrame()
+        }
+    },
+    methods: {
+        init(){
+            let all_data = JSON.parse(localStorage.getItem('ids'))
+            this.dataList = all_data
+            this.currentData = this.$route.query.data || all_data[all_data.length -1]
+            this.$router.replace({ query: { data: this.currentData} }).catch(()=>{});
+            
+            let log = JSON.parse(localStorage.getItem(this.currentData))
+            log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
+            console.log({log})
+            if(log == null){
+                alert("無效記錄檔，即將刷新頁面")
+                this.$router.replace({ query: { data: null } }).catch(()=>{});
+                window.location.reload()
+            }
+            this.total_data_length = log.logs.length
+            this.dataList = log.logs
+            this.initFrame()
+            window.vm = this
+
+            
+            // let idx = this.$route.query.idx || 0
+            // console.log('idxxx', idx, this.total_data_length)
+            // if(idx > this.total_data_length){
+            //     console.log(idx, this.total_data_length)
+            //     idx = 0
+            // }
+            // this.$router.push({ query: { ...this.$route.query, idx: idx } }).catch(()=>{});
+            const tx = this.db.transaction('imgs', 'readonly')
+            const store = tx.objectStore('imgs')
+            
+            
+            
+            // let vue = this
+            // // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
+            // this.gazer_points = []
+            // let value = 50;
+            // for(let i_ in log.logs[0].gaze_log){
+            //     console.log(log.logs[0].gaze_log[i_])
+            //     value = 50;
+            //     this.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
+            //     // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
+            // }
+            // console.log('this.gazer_points', this.gazer_points)
+            // const request = store.get(log.logs[0].screenshot_id);
+            // request.onsuccess = function() {
+            // const matching = request.result;
+            // if (matching !== undefined) {
+            //     vue.b64 = matching.base_64.split(',')[1]
+            // } else {
+            //     // No match was found.
+            //     console.log('No match was found.')
+            // }
+            // };
+        },
+        selectNewData(id){
+            this.$router.replace({ query: { data: id } }).catch(()=>{});
+            this.init()
+        },
+        initFrame(){
+            let idx = this.idx
+            let log = this.dataList[idx]
+            this.timeStamp = new Date(log.time)
+            this.emotion = log.emotion
+            this.arousal = log.arousal
+            this.valence = log.valence
+
+            const tx = this.db.transaction('imgs', 'readonly')
+            const store = tx.objectStore('imgs')
+            let vue = this
+            // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
+            this.gazer_points = []
+            let value = 50;
+            console.log({log})
+            for(let i_ in log.gaze_log){
+                console.log(log.gaze_log[i_])
+                value = 50;
+                this.gazer_points.push( { x : log.gaze_log[i_][0], y : log.gaze_log[i_][1], value : value } ) ;
+                // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
+            }
+            console.log('this.gazer_points', this.gazer_points)
+            const request = store.get(log.screenshot_id);
+            request.onsuccess = function() {
+            const matching = request.result;
+            if (matching !== undefined) {
+                vue.b64 = matching.base_64.split(',')[1]
+            } else {
+                // No match was found.
+                console.log('No match was found.')
+            }
+            };
+        },
+    }
+}
+
+</script>
 
 <style>
 .view_log_container {
@@ -32,7 +192,7 @@
     transform: translate(-50%, -17%);
 }
 .left_img {
-    background-color: antiquewhite;
+    /* background-color: antiquewhite; */
     height: 64vh;
 }
 #submit_btn {

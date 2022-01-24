@@ -1,7 +1,7 @@
 <template>
-    <div class="heatmap">
+    <div class="heatmap align-left">
         <img :src="'data:image/jpeg;base64,' + image_b64" 
-        :width='width' :height='height'
+        :width='width' :height='height' style='width: 100% !important; height: fit-content'
         >
     </div>
 </template>
@@ -114,7 +114,7 @@ export default {
 
 <style>
 .heatmap {
-  width: 1280px;
-  height: 720px;
+  /* width: 1280px;
+  height: 720px; */
 }
 </style>

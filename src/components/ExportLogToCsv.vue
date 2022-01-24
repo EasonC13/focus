@@ -42,6 +42,11 @@ var download = function(content, fileName, mimeType) {
 
 export default {
     props: {
+      showHint: {
+        type: Boolean,
+        required: false,
+        default: true
+      },
       storage_id: {
         type: String,
         required: false,
