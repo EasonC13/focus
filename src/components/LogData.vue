@@ -281,8 +281,8 @@ export default {
                         'Content-Type': 'application/json'
                 },
                 data: {
-                    display_name: localStorage.getItem('display_name') || firebase.auth().currentUser.displayName || "",
-                    account: firebase.auth().currentUser.email,
+                    display_name: localStorage.getItem('display_name') || (firebase.auth().currentUser || {}).displayName || '',
+                    account: (firebase.auth().currentUser || {}).email || '',
                     room_id: this.room_id,
                     arousal: data.arousal,
                     valence: data.valence,
