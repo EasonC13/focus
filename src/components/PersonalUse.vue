@@ -24,6 +24,9 @@ export default {
     components: {
         Log
     },
+    mounted(){
+        
+    }
 
 }
 </script>

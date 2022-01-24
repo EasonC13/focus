@@ -1,22 +1,23 @@
 <template>
-  <div class="container mt-5">
-      <div class="row">
+  <div class="container mt-1">
+    <welcome></welcome>
+      <div class="row mt-5">
         <div class="col-sm-4">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="../assets/personal_use.jpeg" alt="Card image cap">
+                <img class="card-img-top" src="https://i.imgur.com/we5ZfQ4.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">個人使用</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <router-link :to="'/indvidual'" class="link btn btn-primary">開始個人使用</router-link>
+                    <p class="card-text">評估自己的情況，協助自己了解現在的學習狀態。</p>
+                    <router-link :to="'/individual'" class="link btn btn-primary">開始個人使用</router-link>
                 </div>
             </div>
         </div>
         <div class="col-sm-4">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="../assets/personal_use.jpeg" alt="Card image cap">
+                <img class="card-img-top" src="https://i.imgur.com/dyeD6qp.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">群體共學</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <p class="card-text">與房間的人互相幫助了解彼此的學習狀況，互助共學！</p>
                     <div class='d-inline-block form-inline'>
                         
                         <input style='width: 50%' class='mr-2 form-control'
@@ -29,10 +30,10 @@
         </div>
         <div class="col-sm-4">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="../assets/personal_use.jpeg" alt="Card image cap">
+                <img class="card-img-top" src="https://i.imgur.com/Xc7vQJu.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">查看回放</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <p class="card-text">檢視先前的專注紀錄，了解成長後的自己！</p>
                     <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
                 </div>
             </div>
@@ -44,9 +45,13 @@
 
 <script>
   import firebase from 'firebase';
+  import welcome from './welcome.vue'
 
   export default {
     name: 'login',
+    components: {
+      welcome,
+    },
     data() {
       return {
         user: firebase.auth().currentUser,

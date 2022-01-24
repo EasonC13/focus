@@ -19,6 +19,7 @@ import PersonalUse from './components/PersonalUse.vue'
 import MediaStream from './components/MediaStream.vue'
 import GroupRoom from './components/GroupRoom'
 import ExportLogToCsv from './components/ExportLogToCsv.vue'
+import welcome from './components/welcome.vue'
 
 Vue.use(Router)
 Vue.use( heatmapjsVue )
@@ -43,7 +44,7 @@ const router =  new Router({
       component: MediaStream,
     },
     {
-      path: '/indvidual',
+      path: '/individual',
       component: PersonalUse
     },
     {
@@ -93,6 +94,10 @@ const router =  new Router({
     {
       path: '/login',
       component: login,
+    },
+    {
+      path: '/welcom',
+      component: welcome,
     }
   ]
 })
@@ -103,6 +108,14 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
   if (requiresAuth && !currentUser) next('/login');
+  // let isWelcome = (localStorage.getItem('welcomed') || false)
+  // localStorage.setItem('welcomed', true)
+  // if (!isWelcome){
+  //   console.log('welcome')
+  //   next('/welcome')
+  // }
+
+
   else next();
 });
 

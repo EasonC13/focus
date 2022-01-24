@@ -148,6 +148,11 @@ export default {
         }
     },
     mounted(){
+        let trained = localStorage.getItem('trained') || false
+        if(trained == false){
+            this.$router.push('/model')
+            return 0
+        }
         this.id = makeid(10)
         console.log(`Create new log session at id ${this.id}`)
         let ids = getStorage('ids') || []

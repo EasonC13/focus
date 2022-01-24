@@ -12,10 +12,10 @@
             <router-link :to="'/'" class="link nav-link">首頁</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/model'" class="link nav-link">AI 模型</router-link>
+            <router-link :to="'/model'" class="link nav-link">校准 AI 模型</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/'" class="link nav-link">開始使用</router-link>
+            <router-link :to="'/individual'" class="link nav-link">開始使用</router-link>
           </li>
           <li class="nav-item">
             <router-link :to="'/'" class="link nav-link">教師端登入</router-link>

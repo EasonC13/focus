@@ -13,7 +13,7 @@
         <!-- <button @click='finish_training'>Finish Training （測試用）</button> -->
         <div class='container'>
           <p v-if='training'></p>
-          <p v-else-if='current_emotion.length == 0'>請等待模型載入</p>
+          <p v-else-if='current_emotion.length == 0'>需要先訓練模型才能使用<br>請等待模型載入</p>
           <p v-else>現在情緒為： {{current_emotion}}</p>
           <p>training = {{training}}, trained = {{trained}}</p>
           <router-link :to="'/'" @click="clearGazer" class='btn btn-primary mr-1'
