@@ -114,7 +114,7 @@ export default {
             //     idx = 0
             // }
             // this.$router.push({ query: { ...this.$route.query, idx: idx } }).catch(()=>{});
-            const tx = this.db.transaction('imgs', 'readonly')
+            const tx = this.db.transaction('imgs', 'readwrite')
             const store = tx.objectStore('imgs')
             
             
@@ -153,7 +153,7 @@ export default {
             this.arousal = log.arousal
             this.valence = log.valence
 
-            const tx = this.db.transaction('imgs', 'readonly')
+            const tx = this.db.transaction('imgs', 'readwrite')
             const store = tx.objectStore('imgs')
             let vue = this
             // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))

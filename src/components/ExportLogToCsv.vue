@@ -82,7 +82,7 @@ export default {
             let imgs = {}
             let vue = this
             data.logs.forEach((log) => {
-                const tx = db.transaction('imgs', 'readonly')
+                const tx = db.transaction('imgs', 'readwrite')
                 const store = tx.objectStore('imgs')
 
                 const request = store.get(log.screenshot_id);

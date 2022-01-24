@@ -30,7 +30,7 @@ export default {
         let id = localStorage.getItem('ids')[8]
         let log = JSON.parse(localStorage.getItem('qq0lcirSwd'))
         console.log(log.logs[0])
-        const tx = db.transaction('imgs', 'readonly')
+        const tx = db.transaction('imgs', 'readwrite')
         const store = tx.objectStore('imgs')
         let vue = this
         // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
