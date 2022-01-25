@@ -31,11 +31,12 @@ export default {
         return {
             img_urls: [
                 "IntroCarousel/Slide1.png",
-"IntroCarousel/Slide2.png",
-"IntroCarousel/Slide3.png",
-"IntroCarousel/Slide4.png",
-"IntroCarousel/Slide5.png",
-"IntroCarousel/Slide6.png",
+                "IntroCarousel/Slide2.png",
+                "IntroCarousel/Slide3.png",
+                "IntroCarousel/Slide4.png",
+                "IntroCarousel/Slide5.png",
+                "IntroCarousel/Slide6.png",
+                "IntroCarousel/Slide7.png",
             ]
         }
     }
