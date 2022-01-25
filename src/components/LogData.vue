@@ -2,10 +2,26 @@
     <div>
         
         <div v-if='currentStatus == recordingFlag'>
-            <p>紀錄狀態：{{currentStatus}}</p>
-            <p>當前情緒：{{currentEmotion}}</p>
-            <p>當前精神狀態：{{currentArousal}}</p>
-            <p>當前正向程度：{{currentValence}}</p>
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                <th scope="col">狀態</th>
+                <th scope="col">情緒</th>
+                <th scope="col">精神狀態</th>
+                <th scope="col">正面程度</th>
+                <th scope="col">總共紀錄</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{currentStatus}}</th>
+                    <td>{{currentEmotion}}</td>
+                    <td>{{currentArousal}}</td>
+                    <td>{{currentValence}}</td>
+                    <td>{{log.length}} 筆</td>
+                </tr>
+            </tbody>
+            </table>
             <div>想要紀錄的數據：
                 <input type="checkbox" id="jack" class='m-1'
                 value="螢幕畫面+眼動資料" v-model="datas_want_to_log">
@@ -18,7 +34,7 @@
                 <label for="mike">精神狀態</label>
                 <!-- <br>{{datas_want_to_log}} -->
             </div>
-            <div>想要分享的數據：
+            <div v-if='group_mode'>想要分享的數據：
                 <input type="checkbox" id="jack" class='m-1'
                 value="螢幕畫面+眼動資料" v-model="datas_want_to_share">
                 <label for="jack">螢幕畫面+眼動資料</label>
@@ -40,7 +56,7 @@
             <p>{{currentStatus}}</p>
             <ExportLogToCsv :storage_id='id'
             ></ExportLogToCsv>
-            <p>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+            <p><br>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
             <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
         </div>
         <div v-else><p>{{currentStatus}}</p></div>
@@ -117,6 +133,7 @@ export default {
             screen: `螢幕畫面+眼動資料`,
             is_finish: false,
             is_ready: false,
+            log: [],
         }
     },
     watch: {
@@ -265,6 +282,7 @@ export default {
             this.currentEmotion = data.emotion
             this.currentArousal = data.arousal
             this.currentValence = data.valence
+            this.log = log.logs
             // console.log('this.group_mode',this.group_mode)
             if(this.group_mode){
               

@@ -6,21 +6,42 @@
                 ></heatmap>
             </div>
             <div class="col-sm-4 col-sm-4_">
-                <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{currentData}} (點我切換紀錄)
-                </button>
-                <div class="dropdown-menu overflow-auto" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" :key='index' @click='selectNewData(item)'
-                    v-for="(item, index) in dataList">{{item}}</a>
+                <div class="dropdown mb-2">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{currentData}} (點我切換紀錄)
+                    </button>
+                    <div class="dropdown-menu overflow-auto" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" :key='index' @click='selectNewData(item)'
+                        v-for="(item, index) in dataList">{{item}}</a>
+                    </div>
                 </div>
-                </div>
-                
-                <div><span id="time">{{timeStamp}}</span></div>
-                <div>情緒 : <span id="emotion">{{emotion}}</span></div>
-                <div>正向程度 : <span id="positive">{{valence}}</span></div>
-                <div>精神狀態 : <span id="positive">{{arousal}}</span></div>
-                <br><br>
+                <table class="table table-hover table-sm table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="col">時間點</th>
+                            <th scope="col">
+                            {{`${timeStamp.getUTCFullYear()
+                            }/${timeStamp.getMonth()+1
+                            }/${timeStamp.getUTCDate()
+                            } ${timeStamp.getHours()
+                            }:${timeStamp.getMinutes()
+                            }:${timeStamp.getSeconds()
+                            }`}}</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">情緒</th>
+                            <td>{{emotion}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">精神狀態</th>
+                            <td>{{arousal}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">正向程度</th>
+                            <td>{{valence}}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <ExportLogToCsv :storage_id='currentData' :showHint='false'></ExportLogToCsv>
                 <p>完整版包含情緒機率、截圖、與眼動。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
                 <FileReader cls='btn btn-secondary' btn_text="選擇其他要匯入的紀錄"
