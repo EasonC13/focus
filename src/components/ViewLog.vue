@@ -23,6 +23,8 @@
                 <br><br>
                 <ExportLogToCsv :storage_id='currentData' :showHint='false'></ExportLogToCsv>
                 <p>完整版包含情緒機率、截圖、與眼動。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+                <FileReader cls='btn btn-secondary' btn_text="選擇其他要匯入的紀錄"
+                @load='upload_record'></FileReader>
             </div>
             <div class="col-sm-12 col-sm-12_">
                 <input type="range" min="0" :max="total_data_length - 1" value="1" id="slider" v-model='idx'>
@@ -36,13 +38,14 @@
 <script>
 import heatmap from './heatmap.vue'
 import ExportLogToCsv from './ExportLogToCsv.vue'
-
+import FileReader from './FileReader.vue'
 
 let all_data = JSON.parse(localStorage.getItem('ids'))
 export default {
     components: {
         ExportLogToCsv,
         heatmap,
+        FileReader,
     },
     data(){
         return {
@@ -103,39 +106,6 @@ export default {
             this.logList = log.logs
             this.initFrame()
             window.vm = this
-
-            
-            // let idx = this.$route.query.idx || 0
-            // console.log('idxxx', idx, this.total_data_length)
-            // if(idx > this.total_data_length){
-            //     console.log(idx, this.total_data_length)
-            //     idx = 0
-            // }
-            // this.$router.push({ query: { ...this.$route.query, idx: idx } }).catch(()=>{});
-            
-            
-            
-            // let vue = this
-            // // this.gazer_points = Array.from(log.logs[0].gaze_log.map((x) => {if(x){return {x: x[0], y: x[1], value: 0.5}}}))
-            // this.gazer_points = []
-            // let value = 50;
-            // for(let i_ in log.logs[0].gaze_log){
-            //     console.log(log.logs[0].gaze_log[i_])
-            //     value = 50;
-            //     this.gazer_points.push( { x : log.logs[0].gaze_log[i_][0], y : log.logs[0].gaze_log[i_][1], value : value } ) ;
-            //     // this.gazer_points.push( { x : 100, y : 100, value : value } ) ;
-            // }
-            // console.log('this.gazer_points', this.gazer_points)
-            // const request = store.get(log.logs[0].screenshot_id);
-            // request.onsuccess = function() {
-            // const matching = request.result;
-            // if (matching !== undefined) {
-            //     vue.b64 = matching.base_64.split(',')[1]
-            // } else {
-            //     // No match was found.
-            //     console.log('No match was found.')
-            // }
-            // };
         },
         selectNewData(id){
             this.$router.replace({ query: { data: id } }).catch(()=>{});
@@ -183,6 +153,10 @@ export default {
                 }
             };
         },
+        upload_record(d){
+            console.log(d)
+            alert("尚未支援此功能")
+        }
     }
 }
 

@@ -3,7 +3,7 @@
         <button @click='exportCSV' :class='this.class_text'
         >{{text}}</button>
         <input type="checkbox" id="jack" class='ml-3 mr-1' value="匯出僅能用程式讀取的版本" v-model="checkedForProgramVer">
-        <label for="jack">匯出完整版（完整版僅能用程式讀取）</label>
+        <label for="jack">匯出完整版</label>
     </div>
 </template>
 <script>
