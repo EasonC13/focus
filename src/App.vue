@@ -4,17 +4,20 @@
     <Nav></Nav>
     <router-view></router-view>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <Footer></Footer>
   </div>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import Nav from './components/Nav.vue'
+import Footer from './components/Footer.vue'
 
 export default {
   name: 'App',
   components: {
     Nav,
+    Footer,
   },
   created() {
     console.clear()
