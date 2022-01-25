@@ -6,7 +6,7 @@
       <div class="row mt-5">
         <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="https://i.imgur.com/we5ZfQ4.png" alt="Card image cap">
+                <img class="card-img-top" src="/imgs/menu/PersonalUse.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">個人使用</h5>
                     <p class="card-text">紀錄自己的使用情況<br>協助自己了解現在的學習狀態</p>
@@ -16,7 +16,7 @@
         </div>
         <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="https://i.imgur.com/dyeD6qp.png" alt="Card image cap">
+                <img class="card-img-top" src="/imgs/menu/GroupRoom.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">群體共學</h5>
                     <p class="card-text">與房間內的夥伴一起<br>了解彼此的使用狀況，互相砥礪</p>
@@ -32,7 +32,7 @@
         </div>
         <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="https://i.imgur.com/Xc7vQJu.png" alt="Card image cap">
+                <img class="card-img-top" src="/imgs/menu/WatchRecord.png" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">查看回放</h5>
                     <p class="card-text">檢視先前的專注紀錄<br>回顧自己的使用情況</p>
