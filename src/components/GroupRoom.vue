@@ -58,7 +58,7 @@
                                     <td>高興</td>
                                     <td>0.8</td>
                                     <td>0.7</td>
-                                    <td>chris.heart25@gmail.com</td>
+                                    <td>thinkforgood1107@gmail.com</td>
                                 </tr>
                                 
                             </tbody>

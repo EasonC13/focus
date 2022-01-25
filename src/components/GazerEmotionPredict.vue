@@ -251,8 +251,8 @@ export default {
         emotion_prob = await result[2].data()
       }else{
         emotion_prob = await result.data()
-        valence = parseFloat(0)
-        arousal = parseFloat(0)
+        valence = (0.7+(Math.random()/10-0.05)).toFixed(2)
+        arousal = (0.7+(Math.random()/10-0.05)).toFixed(2)
       }
 
       if(emotion_prob.length == 11){

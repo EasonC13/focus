@@ -1,6 +1,6 @@
 <template>
     <div class="container view_log_container" style="position:absolute;">
-        <div class="row row_">
+        <div class="row row_" v-if='ready'>
             <div class="col-sm-8 col-sm-8_ left_img" v-if='showHeatMap'>
                 <heatmap :image_b64='b64' :width='img_width' :height='img_height' :gazer_points="gazer_points"
                 ></heatmap>
@@ -21,11 +21,11 @@
                             <th scope="col">時間點</th>
                             <th scope="col">
                             {{`${timeStamp.getUTCFullYear()
-                            }/${timeStamp.getMonth()+1
+                            }/${('0' + timeStamp.getMonth()+1).slice(-2)
                             }/${timeStamp.getUTCDate()
-                            } ${timeStamp.getHours()
-                            }:${timeStamp.getMinutes()
-                            }:${timeStamp.getSeconds()
+                            } ${('0' + timeStamp.getHours()).slice(-2)
+                            }:${('0' + timeStamp.getMinutes()).slice(-2)
+                            }:${('0' + timeStamp.getSeconds()).slice(-2)
                             }`}}</th>
                         </tr>
                         <tr>
@@ -84,6 +84,7 @@ export default {
             showHeatMap: true,
             img_width: 1280,
             img_height: 720,
+            ready: false,
         }
     },
     computed:{
@@ -111,6 +112,11 @@ export default {
     methods: {
         init(){
             let all_data = JSON.parse(localStorage.getItem('ids'))
+            all_data = all_data.filter((x) => {
+                return ((JSON.parse(localStorage.getItem(x)) ||
+                 {logs: []}).logs.length > 0)
+            })
+            localStorage.setItem('ids', JSON.stringify(all_data))
             this.dataList = all_data
             this.currentData = this.$route.query.data || all_data[all_data.length -1]
             this.$router.replace({ query: { data: this.currentData} }).catch(()=>{});
@@ -173,6 +179,7 @@ export default {
                     console.log('No match was found.')
                 }
             };
+            this.ready = true
         },
         upload_record(d){
             console.log(d)
