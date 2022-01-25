@@ -4,7 +4,7 @@
       <welcome></welcome>
     </div>
       <div class="row mt-5">
-        <div class="col-sm-4">
+        <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="https://i.imgur.com/we5ZfQ4.png" alt="Card image cap">
                 <div class="card-body">
@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="https://i.imgur.com/dyeD6qp.png" alt="Card image cap">
                 <div class="card-body">
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4 d-flex align-items-stretch">
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="https://i.imgur.com/Xc7vQJu.png" alt="Card image cap">
                 <div class="card-body">

@@ -6,7 +6,7 @@
             </div>
             <div class="col-sm-11">
                 <div class="card">
-                    <h5 class="card-header">團體使用介面</h5>
+                    <h5 class="card-header">群體共學</h5>
                     <div class="card-body">
                         <Log group_mode :room_id='room_id'
                         v-if='true'></Log>
