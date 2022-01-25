@@ -19,7 +19,7 @@ import PersonalUse from './components/PersonalUse.vue'
 import MediaStream from './components/MediaStream.vue'
 import GroupRoom from './components/GroupRoom'
 import ExportLogToCsv from './components/ExportLogToCsv.vue'
-import welcome from './components/welcome.vue'
+import welcome from './components/IntroCarousel.vue'
 
 Vue.use(Router)
 Vue.use( heatmapjsVue )
@@ -29,11 +29,11 @@ const router =  new Router({
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      component: Menu,
     },
     {
       path: '/home',
-      component: Menu,
+      redirect: '/home',
     },
     {
       path: '/ExportLogToCsv',

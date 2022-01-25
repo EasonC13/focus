@@ -47,7 +47,7 @@
 
 <script>
   import firebase from 'firebase';
-  import welcome from './welcome.vue'
+  import welcome from './IntroCarousel.vue'
 
   export default {
     name: 'login',
