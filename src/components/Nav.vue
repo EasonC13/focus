@@ -18,7 +18,7 @@
             <router-link :to="'/individual'" class="link nav-link">開始使用</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/'" class="link nav-link">教師端登入</router-link>
+            <router-link :to="'/'" class="link nav-link" disabled>教師版（尚未開放）</router-link>
           </li>
           <!-- <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
@@ -31,7 +31,7 @@
               您好 {{user.displayName}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">設定</a>
+              <a class="dropdown-item" href="#">設定（未開放）</a>
               <!-- <a class="dropdown-item" href="#"></a> -->
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" @click='logout'>登出</a>
