@@ -8,9 +8,9 @@
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="/imgs/menu/PersonalUse.png" alt="Card image cap">
                 <div class="card-body">
-                    <h5 class="card-title">個人使用</h5>
-                    <p class="card-text">紀錄自己的使用情況<br>協助自己了解現在的學習狀態</p>
-                    <router-link :to="'/individual'" class="link btn btn-primary">開始個人使用</router-link>
+                    <h5 class="card-title">Personal</h5>
+                    <p class="card-text">Record your status,<br>know how you learn</p>
+                    <router-link :to="'/individual'" class="link btn btn-primary">Go</router-link>
                 </div>
             </div>
         </div>
@@ -18,14 +18,14 @@
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="/imgs/menu/GroupRoom.png" alt="Card image cap">
                 <div class="card-body">
-                    <h5 class="card-title">群體共學</h5>
-                    <p class="card-text">與房間內的夥伴一起<br>了解彼此的使用狀況，互相砥礪</p>
+                    <h5 class="card-title">Co-learning</h5>
+                    <p class="card-text">Learn together with your friends</p>
                     <div class='d-inline-block form-inline'>
                         
                         <input style='width: 50%' class='mr-2 form-control'
-                        placeholder="# 輸入編號" v-on:keyup.enter='submit_room' v-model='input_room_id'>
-                        <button class="btn btn-primary" @click='submit_room'>進入房間</button>
-                        <button class="btn btn-link mt-1" @click='create_room'>創立您自己的房間</button>
+                        placeholder="# Enter room ID" v-on:keyup.enter='submit_room' v-model='input_room_id'>
+                        <button class="btn btn-primary" @click='submit_room'>Enter room</button>
+                        <button class="btn btn-link mt-1" @click='create_room'>Create your room</button>
                     </div>
                 </div>
             </div>
@@ -34,9 +34,9 @@
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="/imgs/menu/WatchRecord.png" alt="Card image cap">
                 <div class="card-body">
-                    <h5 class="card-title">查看回放</h5>
-                    <p class="card-text">檢視先前的專注紀錄<br>回顧自己的使用情況</p>
-                    <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
+                    <h5 class="card-title">View Record</h5>
+                    <p class="card-text">View your record,<br>know how you learn</p>
+                    <router-link :to="'/view'" class="link btn btn-primary">Go</router-link>
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
     methods: {
       submit_room(){
         if(this.input_room_id.length == 0){
-          // alert("房間號請勿空白，\n已為您填入 Demo 用號碼")
+          // alert("Room ID must not be blank.\nA demo ID has been filled.")
           this.input_room_id = '123'
         }else{
           this.$router.push({path: 'room', query: { id: this.input_room_id }})
