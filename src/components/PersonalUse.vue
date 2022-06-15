@@ -6,7 +6,7 @@
             </div>
             <div class="col-sm-9">
                 <div class="card">
-                    <h5 class="card-header">個人使用</h5>
+                    <h5 class="card-header">Learning with Focus</h5>
                     <div class="card-body">
                         <Log></Log>
                         

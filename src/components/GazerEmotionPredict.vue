@@ -12,14 +12,14 @@
         @finish_training='finish_training'></Fly>
         <!-- <button @click='finish_training'>Finish Training （測試用）</button> -->
         <div class='container'>
-          <p v-if='training && !trained'>需要先訓練模型才能使用<br>請等待模型載入後按照指示開始訓練</p>
-          <p v-else-if='current_emotion.length == 0'>在此您可以查看您的模型表現<br>或點選「清空模型」重新訓練</p>
-          <p v-else>現在情緒為： {{current_emotion}}</p>
+          <p v-if='training && !trained'>The AI model needs to be fine-tune before it can be used<br>Please wait for the model to load and follow the instructions to start training</p>
+          <p v-else-if='current_emotion.length == 0'>Here you can view your AI model performance<br>or click "Clear Model" to retrain</p>
+          <p v-else>Emotion Now {{current_emotion}}</p>
           <!-- <p>training = {{training}}, trained = {{trained}}</p> -->
           <router-link :to="'/'" @click="clearGazer" class='btn btn-primary mr-1'
-          v-if='training && trained'>完成訓練</router-link>
+          v-if='training && trained'>Complete Training</router-link>
           <button @click="clearGazer" class='btn btn-danger ml-1'
-          v-if='!(training) || trained'>清空模型（重新訓練）</button>
+          v-if='!(training) || trained'>Reset and re-train</button>
 
         </div>
         <div v-show='false'>
@@ -257,10 +257,10 @@ export default {
 
       if(emotion_prob.length == 11){
         idx_to_class = {0: 'Neutral', 1: 'Happiness', 2: 'Sadness', 3: 'Surprise', 4: 'Fear', 5: 'Disgust', 6: 'Anger', 7: 'Contempt', 8: 'None', 9: 'Uncertain', 10: 'No-Face'}
-        idx_to_class = {0: '平常心', 1: '開心', 2: '難過', 3: '驚訝', 4: '害怕', 5: '厭惡', 6: '生氣', 7: '鄙視', 8: '無表情', 9: '困惑', 10: '找不到臉'}
+        // idx_to_class = {0: '平常心', 1: '開心', 2: '難過', 3: '驚訝', 4: '害怕', 5: '厭惡', 6: '生氣', 7: '鄙視', 8: '無表情', 9: '困惑', 10: '找不到臉'}
       }else{
         idx_to_class={0: 'Anger', 1: 'Disgust', 2: 'Fear', 3: 'Happiness', 4: 'Neutral', 5: 'Sadness', 6: 'Surprise'}
-        idx_to_class={0: '憤怒', 1: '厭惡', 2: '害怕', 3: '高興', 4: '平常心', 5: '難過', 6: '驚訝'}
+        // idx_to_class={0: '憤怒', 1: '厭惡', 2: '害怕', 3: '高興', 4: '平常心', 5: '難過', 6: '驚訝'}
       }
       
       let argmax = argMax(Array.from(emotion_prob))

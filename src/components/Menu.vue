@@ -2,6 +2,7 @@
   <div class="container mt-1">
     <div class='w-100 '>
       <welcome></welcome>
+      <h5 class="mt-3">⬇️ Start by Scrolling Down ⬇️</h5>
     </div>
       <div class="row mt-5">
         <div class="col-sm-4 d-flex align-items-stretch">

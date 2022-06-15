@@ -5,11 +5,11 @@
             <table class="table table-bordered">
             <thead>
                 <tr>
-                <th scope="col">狀態</th>
-                <th scope="col">情緒</th>
-                <th scope="col">精神狀態</th>
-                <th scope="col">正面程度</th>
-                <th scope="col">總共紀錄</th>
+                <th scope="col">Status</th>
+                <th scope="col">Emotion</th>
+                <th scope="col">Arousal</th>
+                <th scope="col">Valence</th>
+                <th scope="col">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,45 +18,45 @@
                     <td>{{currentEmotion}}</td>
                     <td>{{currentArousal}}</td>
                     <td>{{currentValence}}</td>
-                    <td>{{log.length}} 筆</td>
+                    <td>{{log.length}}</td>
                 </tr>
             </tbody>
             </table>
-            <div>想要紀錄的數據：
+            <div>Data wants to record
                 <input type="checkbox" id="jack" class='m-1'
                 value="螢幕畫面+眼動資料" v-model="datas_want_to_log">
-                <label for="jack">螢幕畫面+眼動資料</label>
+                <label for="jack">Screen and Eye Gazing</label>
                 <input type="checkbox" class='m-1' id="john"
                 value="情緒" v-model="datas_want_to_log">
-                <label for="john">情緒</label>
+                <label for="john">Emotion</label>
                 <input type="checkbox" id="mike" class='m-1'
                 value="精神狀態" v-model="datas_want_to_log">
-                <label for="mike">精神狀態</label>
+                <label for="mike">Valence and Arousal</label>
                 <!-- <br>{{datas_want_to_log}} -->
             </div>
-            <div v-if='group_mode'>想要分享的數據：
+            <div v-if='group_mode'>Data wants to share:
                 <input type="checkbox" id="jack" class='m-1'
                 value="螢幕畫面+眼動資料" v-model="datas_want_to_share">
-                <label for="jack">螢幕畫面+眼動資料</label>
+                <label for="jack">Screen and Eye Gazing</label>
                 <input type="checkbox" class='m-1' id="john"
                 value="情緒" v-model="datas_want_to_share">
-                <label for="john">情緒</label>
+                <label for="john">Emotion</label>
                 <input type="checkbox" id="mike" class='m-1'
                 value="精神狀態" v-model="datas_want_to_share">
-                <label for="mike">精神狀態</label>
+                <label for="mike">Valence and Arousal</label>
                 <!-- <br>{{datas_want_to_share}} -->
             </div>
-            <p>在開始紀錄後，您可以前往其他視窗，自由的使用電腦。<br>
-            本平台會自動記錄您的情緒變化、精神狀態、眼動軌跡及螢幕畫面<br>
-            透過勾選上方選項，您可以決定哪些數據會被記錄<span v-if='group_mode'>或分享</span></p>
-            <button class='btn btn-secondary mr-1' >暫停紀錄</button>
-            <button class='btn btn-danger ml-1' @click='finish'>結束紀錄</button>
+            <p>After starting the recording, you can go to other windows and use the computer freely. <br>
+             This platform will automatically record your emotional changes, mental state, eye movements and screen images<br>
+             By checking the options above, you can decide which data will be recorded<span v-if='group_mode'>or sharing</span></p>
+            <button class='btn btn-secondary mr-1' >Pause</button>
+            <button class='btn btn-danger ml-1' @click='finish'>End Recording</button>
         </div>
         <div v-else-if='currentStatus == "紀錄完成"'>
             <p>{{currentStatus}}</p>
             <ExportLogToCsv :storage_id='id'
             ></ExportLogToCsv>
-            <p><br>完整版包含情緒機率、截圖、與眼動軌跡。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+            <p><br>The full version includes emotional probability, screenshots, and eye tracking. <br>Because the content is large, it needs to be analyzed by a program, or you can import it again to this website for analysis</p>
             <router-link :to="'/view'" class="link btn btn-primary">前往回放</router-link>
         </div>
         <div v-else><p>{{currentStatus}}</p></div>

@@ -8,7 +8,7 @@
             <div class="col-sm-4 col-sm-4_">
                 <div class="dropdown mb-2">
                     <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{currentData}} (點我切換紀錄)
+                        {{currentData}} Click to switch logs
                     </button>
                     <div class="dropdown-menu overflow-auto" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" :key='index' @click='selectNewData(item)'
@@ -18,7 +18,7 @@
                 <table class="table table-hover table-sm table-bordered">
                     <tbody>
                         <tr>
-                            <th scope="col">時間點</th>
+                            <th scope="col">Timestamp</th>
                             <th scope="col">
                             {{`${timeStamp.getUTCFullYear()
                             }/${('0' + timeStamp.getMonth()+1).slice(-2)
@@ -29,27 +29,27 @@
                             }`}}</th>
                         </tr>
                         <tr>
-                            <th scope="row">情緒</th>
+                            <th scope="row">Emotion</th>
                             <td>{{emotion}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">精神狀態</th>
+                            <th scope="row">Arousal</th>
                             <td>{{arousal}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">正向程度</th>
+                            <th scope="row">Valence</th>
                             <td>{{valence}}</td>
                         </tr>
                     </tbody>
                 </table>
                 <ExportLogToCsv :storage_id='currentData' :showHint='false'></ExportLogToCsv>
-                <p>完整版包含情緒機率、截圖、與眼動。<br>因內容較大，需要用程式才能分析，或您能再次導入到此網站分析</p>
+                <p>Full version includes emotional probability, screenshots, and eye movements. <br>Because the content is large, it needs to be analyzed by a program, or you can import it again to this website for analysis</p>
                 <FileReader cls='btn btn-secondary' btn_text="選擇其他要匯入的紀錄"
                 @load='upload_record'></FileReader>
             </div>
             <div class="col-sm-12 col-sm-12_">
                 <input type="range" min="0" :max="total_data_length - 1" value="1" id="slider" v-model='idx'>
-                時間軸
+                Timeline
             </div>
         </div>
         <!-- <span>{{currentLog}}</span> -->

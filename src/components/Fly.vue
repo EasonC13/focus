@@ -7,13 +7,13 @@
       <button @click="getFaceCrop">getFaceCrop</button>
       <button>predictEmotion</button>
       <button>keepPredictEmotion</button> -->
-        <p class='h3'>校正模型</p>
-        <p class='h3'>請用滑鼠雙擊來打蚊子十次</p>
+        <p class='h3'>Fine-Tune AI Model</p>
+        <p class='h3'>Please double click your mouse to hit mosquito ten times</p>
         <p v-if='total_need - click_times > 0' class='h3'
             >🦟：{{'🧡'.repeat(total_need - click_times)}}{{'🤍'.repeat(click_times)}}</p>
         <!-- <p class='h4' v-if='total_need - click_times > 0'>您已經點擊 {{click_times}} 次<br>還需點擊 {{total_need - click_times}} 次來完成模型訓練</p> -->
-        <p v-else class='h4'>您已經完成視線軌跡追蹤模型的訓練<br>但你可以多打幾下蚊子以增加模型的精確度</p>
-        <p v-if='gazer_point_show'>紅色的點，就是模型預測您的視線焦點</p>
+        <p v-else class='h4'>You have finished training the gaze trajectory tracking model<br>but you can hit a few more mosquitoes to increase the accuracy of the model</p>
+        <p v-if='gazer_point_show'>The red dot is where the your eye gazing point predicted by AI model</p>
         <div id="fly_playground">
 
             <img id="fly_training_target" :src="display_src"

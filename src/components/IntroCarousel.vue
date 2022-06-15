@@ -11,7 +11,7 @@
                 <img class="d-block w-100" :src="img_url" :alt="`${idx} slide`"
                 >
                 <div class="carousel-caption d-none d-md-block">
-                    <h5>⬇️ 下滑以開始 ⬇️</h5>
+                    <!-- <h5>⬇️ 下滑以開始 ⬇️</h5> -->
                 </div>
             </div>
             
@@ -32,7 +32,7 @@ export default {
         return {
             img_urls: [],
             slides_count: 10,
-            prefix: "IntroCarousel/Slide",
+            prefix: "IntroCarousel_en/Slide",
             postfix: ".png",
         }
     },

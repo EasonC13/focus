@@ -9,16 +9,16 @@
       <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <li class="nav-item active">
-            <router-link :to="'/'" class="link nav-link">首頁</router-link>
+            <router-link :to="'/'" class="link nav-link">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/model'" class="link nav-link">校准 AI 模型</router-link>
+            <router-link :to="'/model'" class="link nav-link">AI</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/individual'" class="link nav-link">開始使用</router-link>
+            <router-link :to="'/individual'" class="link nav-link">Start Focus</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="'/'" class="link nav-link" disabled>教師版（尚未開放）</router-link>
+            <router-link :to="'/'" class="link nav-link" disabled>Teacher Version (Coming Soon)</router-link>
           </li>
           <!-- <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
@@ -28,17 +28,17 @@
           
           <li class="nav-item dropdown" v-if='user'>
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              您好 {{user.displayName}}
+              Hello {{user.displayName}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">設定（未開放）</a>
+              <a class="dropdown-item" href="#">Customize (Coming Soon)</a>
               <!-- <a class="dropdown-item" href="#"></a> -->
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" @click='logout'>登出</a>
+              <a class="dropdown-item" @click='logout'>Logout</a>
             </div>
           </li>
           <li class="nav-item" v-else>
-            <router-link :to="'/login'" class="link nav-link">登入</router-link>
+            <router-link :to="'/login'" class="link nav-link">Login</router-link>
           </li>
         </ul>
         <!-- <form class="form-inline my-2 my-lg-0">
