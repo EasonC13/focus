@@ -88,7 +88,7 @@
       <button class="btn btn-secondary mr-1">Pause</button>
       <button class="btn btn-danger ml-1" @click="finish">End Recording</button>
     </div>
-    <div v-else-if="currentStatus == '紀錄完成'">
+    <div v-else-if="currentStatus == 'Recording Finish'">
       <p>{{ currentStatus }}</p>
       <ExportLogToCsv :storage_id="id"></ExportLogToCsv>
       <p>
@@ -98,13 +98,13 @@
         analysis
       </p>
       <router-link :to="'/view'" class="link btn btn-primary"
-        >前往回放</router-link
+        >To Playback</router-link
       >
     </div>
     <div v-else>
       <p>{{ currentStatus }}</p>
     </div>
-    <div v-if="is_ready && !(currentStatus == '紀錄完成')">
+    <div v-if="is_ready && !(currentStatus == 'Recording Finish')">
       <Predictor :asPredictor="true" @newPredict="handlePredict"></Predictor>
       <MediaStream production></MediaStream>
     </div>
@@ -372,7 +372,7 @@ export default {
     },
     finish() {
       this.is_finish = true;
-      this.currentStatus = "紀錄完成";
+      this.currentStatus = "Recording Finish";
     },
   },
 };
